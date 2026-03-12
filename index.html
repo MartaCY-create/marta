@@ -2837,5 +2837,9 @@ function getWeekKey() {
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && menuOpen) toggleMenu(); });
 })();
 </script>
+  <!-- Google Drive Sync — añadir al final del body -->
+  <script>window.GDRIVE_CLIENT_ID = 'TU_CLIENT_ID_AQUI.apps.googleusercontent.com';</script>
+  <script src="js/gdrive-sync.js"></script>
+  <script src="js/gdrive-patch.js"></script>
 </body>
 </html>
