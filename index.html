@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mi Rutina Diaria</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --sage: #8A9E85; --sage-light: #B8C9B4; --sage-pale: #EDF2EC;
@@ -19,7 +19,7 @@
   .hero::before { content:''; position:absolute; top:-60px; right:-60px; width:300px; height:300px; border-radius:50%; background:radial-gradient(circle,rgba(138,158,133,.2) 0%,transparent 70%); }
   .hero::after { content:''; position:absolute; bottom:-40px; left:20%; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle,rgba(196,133,90,.15) 0%,transparent 70%); }
   .hero-eyebrow { font-size:11px; font-weight:500; letter-spacing:3px; text-transform:uppercase; color:var(--sage-light); margin-bottom:14px; }
-  .hero-title { font-family:'Cormorant Garamond',serif; font-size:clamp(32px,5.5vw,52px); font-weight:300; color:var(--cream); line-height:1.1; }
+  .hero-title { font-family:'Cormorant Garamond',serif; font-size:clamp(32px,5.5vw,52px); font-weight:300; color:var(--cream); line-height:1.1; text-shadow:none; }
   .hero-title em { font-style:italic; color:var(--terracotta-light); }
   .hero-subtitle { font-size:13px; font-weight:300; color:rgba(247,244,238,.55); max-width:420px; line-height:1.7; margin-top:14px; }
   .date-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(138,158,133,.2); border:1px solid rgba(138,158,133,.3); padding:7px 14px; border-radius:20px; font-size:12px; color:var(--sage-light); margin-top:20px; }
@@ -37,12 +37,59 @@
   .time-pill { display:flex; align-items:center; gap:6px; background:var(--cream); border:1px solid rgba(0,0,0,.08); border-radius:20px; padding:6px 14px; font-size:12px; color:var(--warm-mid); }
   .time-pill input[type=time] { border:none; background:transparent; font-size:12px; color:var(--warm-dark); font-family:'DM Sans',sans-serif; outline:none; width:80px; }
 
-  .nav-tabs { display:flex; background:white; border-bottom:1px solid rgba(0,0,0,.06); overflow-x:auto; padding:0 20px; position:sticky; top:0; z-index:100; box-shadow:0 2px 12px rgba(0,0,0,.05); scrollbar-width:none; }
-  .nav-tabs::-webkit-scrollbar { display:none; }
-  .nav-tab { display:flex; align-items:center; gap:7px; padding:16px; font-size:12.5px; font-weight:400; color:var(--warm-mid); cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; transition:all .2s; background:none; border-top:none; border-left:none; border-right:none; font-family:'DM Sans',sans-serif; }
-  .nav-tab:hover { color:var(--warm-dark); }
-  .nav-tab.active { color:var(--warm-dark); border-bottom-color:var(--terracotta); font-weight:500; }
-  .nav-tab .dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+  /* ── BOTTOM NAV DOCK ── */
+  .bottom-nav { display:flex; background:white; border-bottom:1px solid rgba(0,0,0,.07); position:sticky; top:0; z-index:200; box-shadow:0 2px 12px rgba(0,0,0,.07); overflow-x:auto; scrollbar-width:none; }
+  .bottom-nav::-webkit-scrollbar { display:none; }
+  .bn-item { flex:1; min-width:64px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:10px 6px 9px; border:none; background:none; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .15s; position:relative; }
+  .bn-item:active { background:rgba(0,0,0,.03); }
+  .bn-icon { font-size:20px; line-height:1; }
+  .bn-label { font-size:10px; font-weight:400; color:var(--warm-mid); letter-spacing:.2px; white-space:nowrap; }
+  .bn-item.active .bn-label { color:var(--terracotta); font-weight:600; }
+  .bn-item.active::after { content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:28px; height:2px; background:var(--terracotta); border-radius:3px 3px 0 0; }
+  .bn-more .bn-icon { font-size:18px; }
+
+  /* ── MENU OVERLAY + DRAWER ── */
+  .menu-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:300; backdrop-filter:blur(2px); }
+  .menu-overlay.open { display:block; animation:fadeIn .2s ease; }
+  .menu-drawer { position:fixed; bottom:0; left:0; right:0; background:var(--cream); border-radius:24px 24px 0 0; z-index:400; padding:0 0 calc(env(safe-area-inset-bottom) + 16px); transform:translateY(100%); transition:transform .3s cubic-bezier(.34,1.1,.64,1); box-shadow:0 -8px 40px rgba(0,0,0,.15); }
+  .menu-drawer.open { transform:translateY(0); }
+  .md-header { display:flex; align-items:center; justify-content:space-between; padding:20px 22px 16px; }
+  .md-title { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:400; color:var(--warm-dark); }
+  .md-close { width:32px; height:32px; border-radius:50%; border:none; background:rgba(0,0,0,.06); font-size:14px; cursor:pointer; color:var(--warm-mid); display:flex; align-items:center; justify-content:center; }
+  .md-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:0 16px 8px; }
+  .md-item { display:flex; flex-direction:column; align-items:center; gap:8px; padding:14px 8px; border:none; background:white; border-radius:16px; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .15s; border:1px solid rgba(0,0,0,.04); }
+  .md-item:active { transform:scale(.96); }
+  .md-item.active-section { border-color:var(--terracotta); box-shadow:0 0 0 2px rgba(196,133,90,.2); }
+  .md-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; }
+  .md-name { font-size:12px; font-weight:400; color:var(--warm-dark); text-align:center; line-height:1.2; }
+
+  /* DESKTOP */
+  @media(min-width:768px){
+    .bn-item { padding:14px 18px; flex-direction:row; gap:8px; flex:0 0 auto; min-width:auto; }
+    .bn-item::after { bottom:0; top:auto; border-radius:3px 3px 0 0; width:100%; }
+    .bn-icon { font-size:16px; }
+    .bn-label { font-size:12.5px; font-weight:400; }
+    .menu-drawer { bottom:auto; top:auto; border-radius:16px; max-width:520px; left:50%; transform:translateX(-50%) translateY(-8px) scale(.97); opacity:0; transition:opacity .2s, transform .2s; pointer-events:none; box-shadow:0 8px 40px rgba(0,0,0,.15); margin-top:4px; }
+    .menu-drawer.open { transform:translateX(-50%) translateY(0) scale(1); opacity:1; pointer-events:all; }
+    .md-grid { grid-template-columns:repeat(5,1fr); }
+  }
+
+  /* DAILY CONTEXT PANEL in journal */
+  .ctx-panel { border-radius:18px; overflow:hidden; margin-bottom:16px; border:1px solid rgba(0,0,0,.06); }
+  .ctx-header { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; background:white; cursor:pointer; user-select:none; }
+  .ctx-header-left { display:flex; align-items:center; gap:10px; }
+  .ctx-header-icon { width:32px; height:32px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:16px; }
+  .ctx-header h4 { font-size:14px; font-weight:500; color:var(--warm-dark); margin-bottom:1px; }
+  .ctx-header p { font-size:11px; color:var(--warm-mid); }
+  .ctx-chevron { font-size:12px; color:var(--warm-mid); transition:transform .2s; }
+  .ctx-chevron.open { transform:rotate(180deg); }
+  .ctx-body { display:none; background:white; border-top:1px solid rgba(0,0,0,.04); padding:14px 18px; }
+  .ctx-body.open { display:block; animation:fadeIn .2s ease; }
+  .ctx-row { margin-bottom:12px; }
+  .ctx-row:last-child { margin-bottom:0; }
+  .ctx-row-label { font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--warm-mid); margin-bottom:4px; }
+  .ctx-row-value { font-size:13.5px; color:var(--warm-dark); line-height:1.6; }
+  .ctx-empty { font-size:13px; color:var(--warm-mid); font-style:italic; }
 
   .section { display:none; padding:28px 22px 60px; max-width:680px; margin:0 auto; }
   .section.active { display:block; animation:fadeIn .3s ease; }
@@ -111,7 +158,7 @@
   .mood-selector { display:flex; gap:7px; flex-wrap:wrap; margin-top:8px; }
   .mood-btn { padding:7px 13px; border-radius:20px; border:1px solid rgba(0,0,0,.1); background:var(--cream); font-size:12.5px; cursor:pointer; color:var(--warm-mid); transition:all .15s; font-family:'DM Sans',sans-serif; }
   .mood-btn:hover { border-color:var(--sage); color:var(--sage); }
-  .mood-btn.selected { background:var(--sage); border-color:var(--sage); color:white; }
+  .mood-btn.selected { background:var(--warm-dark); border-color:var(--warm-dark); color:white; font-weight:500; }
   .score-selector { display:flex; gap:5px; margin-top:8px; flex-wrap:wrap; }
   .score-btn { width:34px; height:34px; border-radius:8px; border:1px solid rgba(0,0,0,.1); background:var(--cream); font-size:12.5px; cursor:pointer; color:var(--warm-mid); transition:all .15s; font-family:'DM Sans',sans-serif; font-weight:500; }
   .score-btn:hover { border-color:var(--terracotta); color:var(--terracotta); }
@@ -122,13 +169,33 @@
 
   .ai-recs-box { background:linear-gradient(135deg,#1A2028,#252D38); border-radius:16px; padding:24px; margin-top:16px; }
   .ai-recs-label { font-size:11px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:16px; }
-  .ai-rec { display:flex; gap:12px; align-items:flex-start; margin-bottom:14px; }
+  .ai-rec { display:flex; gap:12px; align-items:flex-start; margin-bottom:16px; }
   .ai-rec:last-child { margin-bottom:0; }
   .ai-rec-num { width:24px; height:24px; border-radius:50%; background:rgba(201,169,110,.2); color:var(--gold); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:500; flex-shrink:0; margin-top:2px; }
-  .ai-rec p { font-size:13.5px; color:rgba(247,244,238,.85); line-height:1.65; font-family:'Cormorant Garamond',serif; font-style:italic; }
+  .ai-rec p { font-size:14px; color:rgba(247,244,238,.92); line-height:1.7; font-family:'Inter','DM Sans',sans-serif; font-style:normal; font-weight:300; }
   .ai-loading { text-align:center; padding:24px; color:rgba(247,244,238,.5); font-size:13px; }
   .spinner { display:inline-block; width:20px; height:20px; border:2px solid rgba(201,169,110,.3); border-top-color:var(--gold); border-radius:50%; animation:spin .8s linear infinite; margin-bottom:8px; }
   @keyframes spin { to{transform:rotate(360deg)} }
+
+  /* EDITABLE NOTE AREAS */
+  .note-area { margin-top:12px; }
+  .note-area textarea { width:100%; border:1px solid rgba(0,0,0,.08); border-radius:10px; padding:11px 13px; font-family:'DM Sans',sans-serif; font-size:13.5px; color:var(--warm-dark); resize:vertical; min-height:64px; background:rgba(247,244,238,.6); outline:none; transition:border-color .2s,background .2s; line-height:1.6; }
+  .note-area textarea:focus { border-color:var(--sage); background:white; }
+  .note-area textarea::placeholder { color:rgba(107,94,82,.38); font-style:italic; }
+  .note-area-label { font-size:11px; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; color:var(--warm-mid); margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+  .note-area-label::before { content:'✏️'; font-size:12px; }
+  .note-saved-badge { display:none; font-size:11px; color:var(--sage); font-weight:500; margin-top:4px; }
+  .note-saved-badge.show { display:block; }
+  .night-section .note-area textarea { background:rgba(255,255,255,.06); color:var(--cream); border-color:rgba(255,255,255,.1); }
+  .night-section .note-area textarea:focus { border-color:var(--sage-light); background:rgba(255,255,255,.1); }
+  .night-section .note-area textarea::placeholder { color:rgba(247,244,238,.3); }
+  .night-section .note-area-label { color:rgba(247,244,238,.45); }
+  .section-save-row { display:flex; align-items:center; justify-content:space-between; margin-top:16px; padding-top:16px; border-top:1px solid rgba(0,0,0,.06); }
+  .section-save-btn { padding:10px 20px; border-radius:20px; border:none; background:var(--warm-dark); color:var(--cream); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; cursor:pointer; transition:all .2s; }
+  .section-save-btn:hover { background:var(--terracotta); }
+  .section-save-btn.night-btn { background:rgba(138,158,133,.25); color:var(--sage-light); }
+  .section-save-btn.night-btn:hover { background:var(--sage); color:white; }
+  .saved-ts { font-size:11px; color:var(--warm-mid); }
 
   .history-entry { background:white; border-radius:14px; padding:18px; margin-bottom:11px; border:1px solid rgba(0,0,0,.05); cursor:pointer; transition:all .2s; }
   .history-entry:hover { box-shadow:0 4px 16px rgba(0,0,0,.06); transform:translateY(-1px); }
@@ -144,7 +211,7 @@
   .detail-value { font-size:13.5px; color:var(--warm-dark); line-height:1.6; }
   .history-recs { background:linear-gradient(135deg,#1A2028,#252D38); border-radius:12px; padding:16px; margin-top:12px; }
   .history-recs .rl { font-size:11px; color:var(--gold); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:10px; }
-  .history-recs .ri { font-size:13px; color:rgba(247,244,238,.8); line-height:1.6; font-family:'Cormorant Garamond',serif; font-style:italic; margin-bottom:6px; padding-left:14px; position:relative; }
+  .history-recs .ri { font-size:13.5px; color:rgba(247,244,238,.85); line-height:1.7; font-family:'Inter','DM Sans',sans-serif; font-weight:300; margin-bottom:8px; padding-left:14px; position:relative; }
   .history-recs .ri::before { content:'—'; position:absolute; left:0; color:var(--gold); }
   .empty-history { text-align:center; padding:48px 24px; }
   .empty-history p { font-family:'Cormorant Garamond',serif; font-size:18px; font-style:italic; color:var(--warm-mid); margin-bottom:8px; }
@@ -160,25 +227,126 @@
   .mantra-card p { font-family:'Cormorant Garamond',serif; font-size:19px; font-style:italic; color:var(--cream); line-height:1.5; position:relative; }
   .mantra-card .mantra-tag { display:inline-block; margin-top:12px; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--sage-light); position:relative; }
 
-  /* PROYECTO */
-  --ia-color: #4A7FA8; --ia-light: #E8F0F8; --ia-pale: #F0F6FC;
-  --impact-color: #7B6FAA; --impact-light: #EDE8F8; --impact-pale: #F5F2FC;
+  /* PROYECTO — NUEVO MÓDULO */
+  .phase-tabs { display:flex; gap:6px; margin-bottom:20px; background:white; border-radius:16px; padding:6px; border:1px solid rgba(0,0,0,.06); }
+  .phase-tab { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; padding:10px 6px; border:none; background:transparent; border-radius:10px; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .2s; }
+  .phase-tab.active { background:var(--warm-dark); }
+  .phase-num { font-size:16px; font-weight:600; color:var(--warm-mid); transition:color .2s; }
+  .phase-tab.active .phase-num { color:var(--gold); }
+  .phase-name { font-size:12px; font-weight:500; color:var(--warm-mid); transition:color .2s; }
+  .phase-tab.active .phase-name { color:var(--cream); }
+  .phase-weeks { font-size:10px; color:rgba(107,94,82,.5); transition:color .2s; }
+  .phase-tab.active .phase-weeks { color:rgba(247,244,238,.4); }
+  .phase-panel { display:none; }
+  .phase-panel.active { display:block; animation:fadeIn .25s ease; }
+  .phase-intro-box { border-radius:14px; padding:16px 18px; margin-bottom:20px; }
+  .add-proj-btn { width:100%; padding:14px; border:2px dashed rgba(196,133,90,.3); border-radius:14px; background:transparent; font-family:'DM Sans',sans-serif; font-size:13.5px; color:var(--terracotta); cursor:pointer; margin-bottom:16px; transition:all .2s; }
+  .add-proj-btn:hover { background:rgba(196,133,90,.05); border-color:var(--terracotta); }
 
-  .proj-hero { border-radius:20px; padding:28px; margin-bottom:20px; position:relative; overflow:hidden; }
-  .proj-hero-ia { background:linear-gradient(135deg,#1A2A38,#243344); }
-  .proj-hero-impact { background:linear-gradient(135deg,#221A38,#2E2444); }
-  .proj-hero::before { content:''; position:absolute; top:-40px; right:-40px; width:180px; height:180px; border-radius:50%; opacity:.15; }
-  .proj-hero-ia::before { background:radial-gradient(circle,#4A7FA8,transparent); }
-  .proj-hero-impact::before { background:radial-gradient(circle,#7B6FAA,transparent); }
-  .proj-tag { font-size:10px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; padding:4px 10px; border-radius:20px; display:inline-block; margin-bottom:12px; }
-  .proj-tag-ia { background:rgba(74,127,168,.25); color:#8BB8D4; }
-  .proj-tag-impact { background:rgba(123,111,170,.25); color:#B8ADDC; }
-  .proj-hero h2 { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:300; color:var(--cream); line-height:1.2; margin-bottom:8px; }
-  .proj-hero p { font-size:13px; color:rgba(247,244,238,.55); line-height:1.6; }
-  .proj-meta { display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
-  .proj-badge { display:flex; align-items:center; gap:5px; padding:5px 11px; border-radius:20px; font-size:11px; font-weight:500; }
-  .proj-badge-ia { background:rgba(74,127,168,.2); color:#8BB8D4; }
-  .proj-badge-impact { background:rgba(123,111,170,.2); color:#B8ADDC; }
+  /* PROJECT CARDS */
+  .proj-card { background:white; border-radius:16px; border:1px solid rgba(0,0,0,.07); margin-bottom:12px; overflow:hidden; }
+  .proj-card-header { display:flex; align-items:center; justify-content:space-between; padding:16px 18px 14px; cursor:pointer; }
+  .proj-card-title { font-size:14px; font-weight:500; color:var(--warm-dark); }
+  .proj-card-hyp { font-size:12px; color:var(--warm-mid); margin-top:2px; font-style:italic; }
+  .proj-card-meta { display:flex; gap:6px; align-items:center; flex-shrink:0; }
+  .proj-dur-badge { font-size:11px; padding:3px 9px; border-radius:10px; background:var(--cream); color:var(--warm-mid); font-weight:500; }
+  .proj-card-body { display:none; padding:0 18px 16px; border-top:1px solid rgba(0,0,0,.04); }
+  .proj-card-body.open { display:block; }
+  .proj-field-row { margin-bottom:12px; }
+  .proj-field-label { font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--warm-mid); margin-bottom:4px; }
+  .proj-field-val { font-size:13.5px; color:var(--warm-dark); line-height:1.6; white-space:pre-wrap; }
+
+  /* ENERGY METER */
+  .energy-meter { margin-top:14px; padding-top:14px; border-top:1px solid rgba(0,0,0,.05); }
+  .energy-meter-title { font-size:11px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--warm-mid); margin-bottom:12px; }
+  .energy-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .energy-label { font-size:12.5px; color:var(--warm-dark); width:80px; flex-shrink:0; }
+  .energy-scale { display:flex; gap:4px; flex:1; }
+  .e-dot { width:28px; height:28px; border-radius:50%; border:1.5px solid rgba(0,0,0,.1); background:var(--cream); cursor:pointer; font-size:11px; font-weight:500; color:var(--warm-mid); display:flex; align-items:center; justify-content:center; transition:all .15s; flex-shrink:0; }
+  .e-dot.sel-energia { background:#C4855A; border-color:#C4855A; color:white; }
+  .e-dot.sel-impacto { background:#4A7FA8; border-color:#4A7FA8; color:white; }
+  .e-dot.sel-fluidez { background:#8A9E85; border-color:#8A9E85; color:white; }
+  .energy-val { font-size:13px; font-weight:600; color:var(--warm-mid); width:24px; text-align:right; }
+
+  /* MODAL */
+  .proj-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:500; backdrop-filter:blur(2px); }
+  .proj-modal-overlay.open { display:block; }
+  .proj-modal { position:fixed; bottom:0; left:0; right:0; background:var(--cream); border-radius:24px 24px 0 0; z-index:600; padding:0 0 env(safe-area-inset-bottom); transform:translateY(100%); transition:transform .3s cubic-bezier(.34,1.1,.64,1); max-height:85vh; overflow-y:auto; }
+  .proj-modal.open { transform:translateY(0); }
+  .proj-modal-header { display:flex; align-items:center; justify-content:space-between; padding:20px 22px 14px; position:sticky; top:0; background:var(--cream); border-bottom:1px solid rgba(0,0,0,.06); z-index:1; }
+  .proj-modal-header h3 { font-size:16px; font-weight:500; color:var(--warm-dark); }
+  .proj-modal-body { padding:16px 22px 24px; }
+  .pm-field { margin-bottom:14px; }
+  .pm-field label { display:block; font-size:11px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--warm-mid); margin-bottom:6px; }
+  .pm-field input, .pm-field select, .pm-field textarea { width:100%; padding:11px 13px; border:1px solid rgba(0,0,0,.1); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:13.5px; color:var(--warm-dark); background:white; outline:none; transition:border-color .2s; }
+  .pm-field input:focus, .pm-field select:focus, .pm-field textarea:focus { border-color:var(--sage); }
+  .pm-field textarea { min-height:80px; resize:vertical; line-height:1.6; }
+  .pm-save-btn { width:100%; padding:14px; border:none; border-radius:12px; background:var(--warm-dark); color:var(--cream); font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; cursor:pointer; transition:background .2s; }
+  .pm-save-btn:hover { background:var(--terracotta); }
+
+  /* EXAMPLE CARDS */
+  .example-proj-card { background:white; border:1px solid rgba(0,0,0,.07); border-radius:14px; padding:14px 16px; margin-bottom:10px; cursor:pointer; transition:all .15s; }
+  .example-proj-card:hover { border-color:var(--terracotta); box-shadow:0 2px 12px rgba(196,133,90,.12); }
+  .epc-top { display:flex; gap:12px; align-items:flex-start; margin-bottom:8px; }
+  .epc-num { width:28px; height:28px; border-radius:8px; background:#FDF0DC; color:#C4855A; font-size:13px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .epc-top h4 { font-size:13.5px; font-weight:500; color:var(--warm-dark); margin-bottom:3px; }
+  .epc-hyp { font-size:12px; color:var(--warm-mid); font-style:italic; }
+  .epc-tags { display:flex; flex-wrap:wrap; gap:5px; }
+  .epc-tags span { font-size:11px; padding:3px 9px; border-radius:10px; background:var(--cream); color:var(--warm-mid); }
+
+  /* RULE BOX */
+  .proj-rule-box { background:linear-gradient(135deg,#2C2820,#342E24); border-radius:14px; padding:18px; margin-top:8px; }
+  .proj-rule-item { font-size:13px; color:rgba(247,244,238,.75); padding:4px 0; }
+
+  /* INSIGHTS */
+  .insights-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+  .insight-card { background:white; border-radius:14px; padding:16px; border:1px solid rgba(0,0,0,.06); }
+  .ins-icon { font-size:20px; margin-bottom:6px; }
+  .ins-label { font-size:11px; font-weight:500; color:var(--warm-mid); margin-bottom:4px; line-height:1.3; }
+  .ins-val { font-size:13px; color:var(--warm-dark); font-weight:500; }
+
+  /* DASHBOARD */
+  .dashboard-box { background:linear-gradient(135deg,#1A2028,#252D38); border-radius:16px; padding:22px; }
+  .talent-box { background:linear-gradient(135deg,#1E2E2A,#1A2820); border-radius:16px; padding:20px; margin-top:12px; }
+  .talent-trio { display:flex; align-items:center; justify-content:center; gap:10px; margin-top:14px; flex-wrap:wrap; }
+  .talent-item { display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .talent-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; }
+  .talent-item span { font-size:12px; color:rgba(247,244,238,.7); font-weight:500; }
+  .talent-plus { font-size:18px; color:rgba(247,244,238,.3); }
+
+  /* TRACKING CARDS */
+  .tracking-card { background:white; border-radius:16px; border:1px solid rgba(0,0,0,.07); overflow:hidden; }
+  .tc-header { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; cursor:pointer; user-select:none; }
+  .tc-header-left { display:flex; align-items:center; gap:10px; }
+  .tc-icon { width:34px; height:34px; border-radius:10px; background:#FDF0DC; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; }
+  .tc-title { font-size:14px; font-weight:500; color:var(--warm-dark); margin-bottom:1px; }
+  .tc-sub { font-size:11.5px; color:var(--warm-mid); }
+  .tc-chev { font-size:12px; color:var(--warm-mid); transition:transform .2s; }
+  .tc-chev.open { transform:rotate(180deg); }
+  .tc-body { display:none; padding:14px 16px 16px; border-top:1px solid rgba(0,0,0,.05); }
+  .tc-body.open { display:block; animation:fadeIn .2s ease; }
+  .tq-row { margin-bottom:14px; }
+  .tq-row:last-of-type { margin-bottom:0; }
+  .tq-label { font-size:12.5px; font-weight:500; color:var(--warm-dark); margin-bottom:7px; line-height:1.4; }
+  .tq-options { display:flex; flex-wrap:wrap; gap:6px; }
+  .tq-opt { padding:7px 14px; border-radius:20px; border:1.5px solid rgba(0,0,0,.1); background:var(--cream); font-family:'DM Sans',sans-serif; font-size:12.5px; color:var(--warm-mid); cursor:pointer; transition:all .15s; }
+  .tq-opt.selected { background:var(--warm-dark); border-color:var(--warm-dark); color:white; font-weight:500; }
+  .tq-input { width:80px; padding:8px 12px; border:1.5px solid rgba(0,0,0,.1); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--warm-dark); outline:none; }
+  .tq-input:focus { border-color:var(--sage); }
+  .tq-text { width:100%; padding:10px 12px; border:1.5px solid rgba(0,0,0,.08); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:13.5px; color:var(--warm-dark); min-height:60px; resize:vertical; outline:none; line-height:1.6; background:rgba(247,244,238,.5); transition:border-color .2s; }
+  .tq-text:focus { border-color:var(--sage); background:white; }
+  .tq-score { display:flex; gap:4px; flex-wrap:wrap; }
+  .tqs-btn { width:30px; height:30px; border-radius:8px; border:1.5px solid rgba(0,0,0,.08); background:var(--cream); font-family:'DM Sans',sans-serif; font-size:12px; font-weight:500; color:var(--warm-mid); cursor:pointer; transition:all .15s; }
+  .tqs-btn.selected { background:var(--terracotta); border-color:var(--terracotta); color:white; }
+  .tc-save-btn { width:100%; margin-top:14px; padding:12px; border:none; border-radius:10px; background:var(--warm-dark); color:white; font-family:'DM Sans',sans-serif; font-size:13.5px; font-weight:500; cursor:pointer; transition:background .2s; }
+  .tc-save-btn:hover { background:var(--terracotta); }
+  .tc-ai-btn { width:100%; margin-top:8px; padding:11px; border-radius:10px; border:1.5px solid rgba(196,133,90,.3); background:transparent; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; color:var(--terracotta); cursor:pointer; transition:all .2s; }
+  .tc-ai-btn:hover { background:rgba(196,133,90,.06); }
+  .tc-ai-result { margin-top:14px; background:linear-gradient(135deg,#1A2028,#252D38); border-radius:12px; padding:16px; }
+  .evolution-card { background:white; border-radius:14px; border:1px solid rgba(0,0,0,.07); padding:16px; }
+  .evo-bar { border-radius:3px 3px 0 0; min-width:10px; transition:height .4s ease; cursor:pointer; position:relative; }
+  .evo-bar:hover::after { content:attr(title); position:absolute; bottom:100%; left:50%; transform:translateX(-50%); background:var(--warm-dark); color:white; font-size:10px; padding:3px 7px; border-radius:5px; white-space:nowrap; margin-bottom:4px; }
+  .evo-stat { font-size:12px; color:var(--warm-mid); background:var(--cream); padding:4px 10px; border-radius:10px; }
 
   /* PROGRESS TIMELINE */
   .timeline-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
@@ -326,7 +494,7 @@
   .wr-rec-item { display:flex; gap:10px; align-items:flex-start; margin-bottom:10px; }
   .wr-rec-item:last-child { margin-bottom:0; }
   .wr-rec-bullet { width:5px; height:5px; border-radius:50%; background:var(--gold); flex-shrink:0; margin-top:8px; }
-  .wr-rec-item p { font-size:13.5px; color:rgba(247,244,238,.82); line-height:1.65; font-family:'Cormorant Garamond',serif; font-style:italic; }
+  .wr-rec-item p { font-size:14px; color:rgba(247,244,238,.88); line-height:1.7; font-family:'Inter','DM Sans',sans-serif; font-weight:300; }
 
   .wr-history-list { margin-top:4px; }
   .wr-history-entry { background:white; border-radius:12px; padding:15px 18px; margin-bottom:9px; border:1px solid rgba(0,0,0,.05); cursor:pointer; transition:all .2s; }
@@ -339,7 +507,7 @@
   .wr-he-detail.open { display:block; }
   .wr-he-analysis { background:var(--warm-dark); border-radius:12px; padding:16px; margin-top:10px; }
   .wr-he-analysis .wa-label { font-size:10px; color:var(--gold); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; }
-  .wr-he-rec { font-size:12.5px; color:rgba(247,244,238,.78); line-height:1.6; font-family:'Cormorant Garamond',serif; font-style:italic; margin-bottom:6px; padding-left:12px; position:relative; }
+  .wr-he-rec { font-size:13px; color:rgba(247,244,238,.85); line-height:1.7; font-family:'Inter','DM Sans',sans-serif; font-weight:300; margin-bottom:6px; padding-left:12px; position:relative; }
   .wr-he-rec::before { content:'—'; position:absolute; left:0; color:var(--gold); }
   .wr-empty { text-align:center; padding:40px 20px; color:var(--warm-mid); }
   .wr-empty p { font-family:'Cormorant Garamond',serif; font-size:17px; font-style:italic; margin-bottom:6px; }
@@ -347,10 +515,40 @@
   .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(100px); background:var(--warm-dark); color:var(--cream); padding:12px 22px; border-radius:30px; font-size:13px; z-index:9999; transition:transform .35s cubic-bezier(.34,1.56,.64,1); white-space:nowrap; box-shadow:0 8px 24px rgba(0,0,0,.2); max-width:90vw; text-align:center; }
   .toast.show { transform:translateX(-50%) translateY(0); }
 
-  @media(max-width:480px){
-    .hero{padding:36px 20px 32px}
-    .section{padding:20px 14px 60px}
-    .nav-tab{padding:14px 11px;font-size:12px}
+  @media(max-width:600px){
+    .hero{padding:28px 18px 26px}
+    .hero-title{font-size:28px}
+    .hero-subtitle{font-size:12.5px}
+    .section{padding:16px 12px 90px}
+    .card{padding:16px 14px}
+    .card h3{font-size:16px}
+    .score-selector{gap:4px}
+    .score-btn{width:30px;height:30px;font-size:12px}
+    .mood-selector{gap:5px}
+    .mood-btn{padding:6px 11px;font-size:12px}
+    .save-btn{font-size:13px;padding:14px}
+    .proj-stats{grid-template-columns:1fr 1fr 1fr}
+    .proj-stat .stat-val{font-size:22px}
+    .wr-grid{grid-template-columns:1fr 1fr}
+    .week-nav-label{font-size:13px}
+    .section-save-row{flex-direction:column;align-items:flex-start;gap:8px}
+    .timeline-track{overflow-x:auto;padding-bottom:8px}
+    .timeline-weeks{min-width:320px}
+    .notif-banner{padding:12px 16px}
+    .journal-card textarea{min-height:70px}
+    .note-area textarea{min-height:58px}
+    .md-grid{grid-template-columns:repeat(3,1fr)}
+  }
+  @media(min-width:768px){
+    .section{max-width:720px;margin:0 auto;padding:32px 32px 80px}
+    .hero{padding:60px 48px 52px}
+    .card{padding:26px}
+  }
+  @media(min-width:1024px){
+    .section{max-width:760px}
+    .hero{padding:64px 0;text-align:center}
+    .hero-subtitle{max-width:520px;margin:14px auto 0}
+    .date-badge{margin:20px auto 0;display:inline-flex}
   }
 </style>
 </head>
@@ -379,18 +577,44 @@
   </div>
 </div>
 
-<!-- NAV -->
-<nav class="nav-tabs">
-  <button class="nav-tab active" onclick="showSection('morning',this)"><span class="dot" style="background:#C4855A"></span>Mañana</button>
-  <button class="nav-tab" onclick="showSection('midday',this)"><span class="dot" style="background:#8A9E85"></span>Mediodía</button>
-  <button class="nav-tab" onclick="showSection('night',this)"><span class="dot" style="background:#4A5568"></span>Noche</button>
-  <button class="nav-tab" onclick="showSection('spiral',this)"><span class="dot" style="background:#C9A96E"></span>Anti-espiral</button>
-  <button class="nav-tab" onclick="showSection('journal',this)"><span class="dot" style="background:#9B8EA0"></span>Diario</button>
-  <button class="nav-tab" onclick="showSection('history',this)"><span class="dot" style="background:#7BA3A8"></span>Historial</button>
-  <button class="nav-tab" onclick="showSection('proyecto',this)"><span class="dot" style="background:#7B9EC4"></span>Proyecto</button>
-  <button class="nav-tab" onclick="showSection('semana',this)"><span class="dot" style="background:#8E6C5A"></span>Mi Semana</button>
-  <button class="nav-tab" onclick="showSection('mantras',this)"><span class="dot" style="background:#A89E7B"></span>Mantras</button>
+<!-- NAV BOTTOM DOCK -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="bn-item active" onclick="showSection('morning',this)" data-label="Mañana">
+    <span class="bn-icon">🌅</span><span class="bn-label">Mañana</span>
+  </button>
+  <button class="bn-item" onclick="showSection('midday',this)" data-label="Mediodía">
+    <span class="bn-icon">☀️</span><span class="bn-label">Mediodía</span>
+  </button>
+  <button class="bn-item" onclick="showSection('night',this)" data-label="Noche">
+    <span class="bn-icon">🌙</span><span class="bn-label">Noche</span>
+  </button>
+  <button class="bn-item" onclick="showSection('journal',this)" data-label="Diario">
+    <span class="bn-icon">📓</span><span class="bn-label">Diario</span>
+  </button>
+  <button class="bn-item bn-more" onclick="toggleMenu()" id="moreBtn">
+    <span class="bn-icon">☰</span><span class="bn-label">Más</span>
+  </button>
 </nav>
+
+<!-- FULL MENU OVERLAY -->
+<div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+<div class="menu-drawer" id="menuDrawer">
+  <div class="md-header">
+    <span class="md-title">Secciones</span>
+    <button class="md-close" onclick="toggleMenu()">✕</button>
+  </div>
+  <div class="md-grid">
+    <button class="md-item" onclick="navTo('morning',this)"><span class="md-icon" style="background:#FDF0DC;color:#C4855A">🌅</span><span class="md-name">Mañana</span></button>
+    <button class="md-item" onclick="navTo('midday',this)"><span class="md-icon" style="background:#EDF2EC;color:#8A9E85">☀️</span><span class="md-name">Mediodía</span></button>
+    <button class="md-item" onclick="navTo('night',this)"><span class="md-icon" style="background:#2C3440;color:#B8C9B4">🌙</span><span class="md-name">Noche</span></button>
+    <button class="md-item" onclick="navTo('spiral',this)"><span class="md-icon" style="background:#FFF0E8;color:#C9A96E">⚡</span><span class="md-name">Anti-espiral</span></button>
+    <button class="md-item" onclick="navTo('journal',this)"><span class="md-icon" style="background:#F2EFF5;color:#9B8EA0">📓</span><span class="md-name">Diario</span></button>
+    <button class="md-item" onclick="navTo('history',this)"><span class="md-icon" style="background:#E8F4F5;color:#7BA3A8">📊</span><span class="md-name">Historial</span></button>
+    <button class="md-item" onclick="navTo('proyecto',this)"><span class="md-icon" style="background:#E8F0F8;color:#4A7FA8">🎯</span><span class="md-name">Proyecto</span></button>
+    <button class="md-item" onclick="navTo('semana',this)"><span class="md-icon" style="background:#F5EDE8;color:#8E6C5A">📅</span><span class="md-name">Mi Semana</span></button>
+    <button class="md-item" onclick="navTo('mantras',this)"><span class="md-icon" style="background:#F5F0E8;color:#A89E7B">✨</span><span class="md-name">Mantras</span></button>
+  </div>
+</div>
 
 <!-- MAÑANA -->
 <div id="morning" class="section active">
@@ -405,6 +629,7 @@
       <p>Una sola palabra. Sin analizar. Lo primero que llegue.</p>
       <div class="instruction-box">Escríbela. Solo una. Tranquila, inquieta, esperanzada, cansada... lo que sea. Nombrarla ya la reduce.</div>
       <div class="timer-badge">⏱ 30 segundos</div>
+      <div class="note-area"><div class="note-area-label">Tu respuesta</div><textarea id="morning_q1" placeholder="Una palabra que describe cómo estás ahora..." oninput="autosaveMoment('morning_q1')"></textarea></div>
     </div>
     <div class="card">
       <div class="card-header"><div class="step-number">2</div><div><div class="subtitle">Anclaje propio</div><h3>¿Qué es <em>mío</em> hoy?</h3></div></div>
@@ -416,12 +641,18 @@
       </ul>
       <div class="instruction-box">No es positivismo vacío. Es reentrenar al cerebro para que busque validación dentro, no fuera.</div>
       <div class="timer-badge">⏱ 2 minutos</div>
+      <div class="note-area"><div class="note-area-label">Tus 3 anclajes de hoy</div><textarea id="morning_q2" placeholder="Cualidad: ... / Algo bien hecho: ... / Algo mío hoy: ..." oninput="autosaveMoment('morning_q2')"></textarea></div>
     </div>
     <div class="card">
       <div class="card-header"><div class="step-number">3</div><div><div class="subtitle">Vaciado mental</div><h3>¿Qué pensamiento ocupa espacio?</h3></div></div>
       <p>Si hay algo sobre él rondando tu cabeza, escríbelo para sacarlo de dentro.</p>
       <div class="instruction-box">Nómbralo y déjalo en el papel. Solo: "Estoy pensando en X." Y sigue con tu día.</div>
       <div class="timer-badge">⏱ 1 minuto</div>
+      <div class="note-area"><div class="note-area-label">Vaciado (opcional)</div><textarea id="morning_q3" placeholder="Estoy pensando en..." oninput="autosaveMoment('morning_q3')"></textarea></div>
+    </div>
+    <div class="section-save-row">
+      <span class="saved-ts" id="morning_ts"></span>
+      <button class="section-save-btn" onclick="saveMomentNotes('morning')">Guardar notas del día</button>
     </div>
   </div>
 </div>
@@ -438,18 +669,25 @@
       <div class="card-header"><div class="step-number">1</div><div><div class="subtitle">Respiración</div><h3>5 respiraciones profundas</h3></div></div>
       <p>Inhala 4 tiempos, retén 2, exhala 6. Activa el sistema nervioso parasimpático y frena la respuesta de alarma.</p>
       <div class="timer-badge">⏱ 1 minuto</div>
+      <div class="note-area"><div class="note-area-label">¿Cómo estás al llegar al mediodía?</div><textarea id="midday_q1" placeholder="Una palabra o frase corta sobre cómo llegas..." oninput="autosaveMoment('midday_q1')"></textarea></div>
     </div>
     <div class="card">
       <div class="card-header"><div class="step-number">2</div><div><div class="subtitle">Presencia física</div><h3>3 cosas que puedes ver ahora</h3></div></div>
       <p>Nómbralas en voz baja. La ansiedad vive en el futuro imaginado. Tu cuerpo siempre está en el presente.</p>
       <div class="instruction-box">Este ejercicio interrumpe el bucle mental trayendo la atención al presente físico.</div>
       <div class="timer-badge">⏱ 30 segundos</div>
+      <div class="note-area"><div class="note-area-label">Las 3 cosas que ves ahora</div><textarea id="midday_q2" placeholder="1. ... / 2. ... / 3. ..." oninput="autosaveMoment('midday_q2')"></textarea></div>
     </div>
     <div class="card">
       <div class="card-header"><div class="step-number">3</div><div><div class="subtitle">Acción concreta</div><h3>1 cosa que harás tú en la próxima hora</h3></div></div>
       <p>Solo una. Concreta. Tuya. Que no dependa de respuestas ni de nadie.</p>
       <div class="instruction-box">"En la próxima hora voy a _______." Esto devuelve el control a tu campo de acción real.</div>
       <div class="timer-badge">⏱ 30 segundos</div>
+      <div class="note-area"><div class="note-area-label">Mi acción de esta hora</div><textarea id="midday_q3" placeholder="En la próxima hora voy a..." oninput="autosaveMoment('midday_q3')"></textarea></div>
+    </div>
+    <div class="section-save-row">
+      <span class="saved-ts" id="midday_ts"></span>
+      <button class="section-save-btn" onclick="saveMomentNotes('midday')">Guardar notas del día</button>
     </div>
   </div>
 </div>
@@ -465,23 +703,31 @@
     <div class="card">
       <div class="card-header"><div class="step-number">1</div><div><div class="subtitle">Estado del día</div><h3>¿Cómo fue el día del 1 al 10?</h3></div></div>
       <ul class="question-list"><li><span class="q-bullet">↑</span>¿Qué lo subió?</li><li><span class="q-bullet">↓</span>¿Qué lo bajó?</li></ul>
+      <div class="note-area"><div class="note-area-label">Tu reflexión del estado del día</div><textarea id="night_q1" placeholder="El día fue un 7. Lo que lo subió fue... Lo que lo bajó fue..." oninput="autosaveMoment('night_q1')"></textarea></div>
     </div>
     <div class="card">
       <div class="card-header"><div class="step-number">2</div><div><div class="subtitle">Rastreo de espiral</div><h3>¿Hubo pensamientos obsesivos hoy?</h3></div></div>
       <p>Sí o no. Y si sí: ¿qué lo detonó?</p>
       <div class="instruction-box">No te juzgues. Solo observa. En 30 días tendrás un mapa real de tus detonadores.</div>
+      <div class="note-area"><div class="note-area-label">Espiral y detonador</div><textarea id="night_q2" placeholder="No hubo espiral hoy. / Sí, se disparó cuando..." oninput="autosaveMoment('night_q2')"></textarea></div>
     </div>
     <div class="card">
       <div class="card-header"><div class="step-number">3</div><div><div class="subtitle">Lo tuyo</div><h3>¿Avancé en algo mío hoy?</h3></div></div>
       <p>Aunque sean 15 minutos. El proyecto, el pádel, leer, explorar algo nuevo.</p>
+      <div class="note-area"><div class="note-area-label">Avance propio</div><textarea id="night_q3" placeholder="Hoy dediqué tiempo a..." oninput="autosaveMoment('night_q3')"></textarea></div>
     </div>
     <div class="card">
       <div class="card-header"><div class="step-number">4</div><div><div class="subtitle">Pregunta semanal</div><h3>¿Quién he sido yo esta semana?</h3></div></div>
       <p>Independientemente de cómo haya ido con él. ¿Qué versión de ti misma has vivido?</p>
+      <div class="note-area"><div class="note-area-label">Tu respuesta</div><textarea id="night_q4" placeholder="Esta semana he sido..." oninput="autosaveMoment('night_q4')"></textarea></div>
     </div>
     <div style="background:rgba(201,169,110,.1);border-radius:12px;padding:16px;margin-top:4px;border:1px solid rgba(201,169,110,.2)">
       <p style="font-size:11px;color:var(--gold);font-weight:500;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px">⚠️ Regla nocturna</p>
       <p style="font-size:13px;color:rgba(247,244,238,.7);line-height:1.6">Si son más de las 21h y tu mente empieza a analizar la relación: escribe el pensamiento y pospónlo para mañana. <strong style="color:var(--cream)">El cerebro nocturno distorsiona.</strong></p>
+    </div>
+    <div class="section-save-row">
+      <span class="saved-ts" id="night_ts" style="color:rgba(247,244,238,.4)"></span>
+      <button class="section-save-btn night-btn" onclick="saveMomentNotes('night')">Guardar notas de la noche</button>
     </div>
   </div>
 </div>
@@ -534,6 +780,19 @@
   <div class="rule-card" style="border-left:3px solid #E8A090"><div class="rule-icon">🚫</div><div><h4>No preguntes "¿estás bien?" desde la ansiedad</h4><p>Comunica necesidades reales, sí. Pero buscar confirmación desde el miedo refuerza el circuito de dependencia.</p></div></div>
   <div class="rule-card" style="border-left:3px solid #E8A090"><div class="rule-icon">🚫</div><div><h4>No analices conversaciones en bucle con amigas</h4><p>Busca perspectiva, sí. Pero el análisis externo excesivo alimenta la espiral.</p></div></div>
   <div class="rule-card" style="border-left:3px solid #E8A090"><div class="rule-icon">🚫</div><div><h4>No construyas escenarios desde el silencio</h4><p>Cuando no sabes algo, la respuesta honesta es "no lo sé". No la que inventa tu mente ansiosa.</p></div></div>
+
+  <div class="divider"><span>Registra este episodio</span></div>
+  <div class="card">
+    <div class="card-header"><div><div class="subtitle">Diario de espiral</div><h3>¿Qué pasó hoy?</h3></div></div>
+    <p style="margin-bottom:12px">Registrar el episodio en caliente ayuda a entender el patrón real.</p>
+    <div class="note-area" style="margin-top:0"><div class="note-area-label">Hecho real que lo detonó</div><textarea id="spiral_hecho" placeholder="El hecho concreto fue..." oninput="autosaveMoment('spiral_hecho')"></textarea></div>
+    <div class="note-area"><div class="note-area-label">Historia que me estaba contando</div><textarea id="spiral_historia" placeholder="Me estaba diciendo que..." oninput="autosaveMoment('spiral_historia')"></textarea></div>
+    <div class="note-area"><div class="note-area-label">Qué hice para salir</div><textarea id="spiral_salida" placeholder="Lo que funcionó fue..." oninput="autosaveMoment('spiral_salida')"></textarea></div>
+    <div class="section-save-row">
+      <span class="saved-ts" id="spiral_ts"></span>
+      <button class="section-save-btn" onclick="saveMomentNotes('spiral')">Guardar registro</button>
+    </div>
+  </div>
 </div>
 
 <!-- DIARIO -->
@@ -597,6 +856,60 @@
       <div id="aiRecsContent"><div class="ai-loading"><div class="spinner"></div><br>Generando tus recomendaciones...</div></div>
     </div>
   </div>
+
+  <!-- CONTEXTO DEL DÍA -->
+  <div style="margin-top:28px">
+    <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--warm-mid);margin-bottom:12px">📋 Lo que registraste hoy</div>
+
+    <div class="ctx-panel" id="ctx-morning">
+      <div class="ctx-header" onclick="toggleCtx('morning')">
+        <div class="ctx-header-left">
+          <div class="ctx-header-icon" style="background:#FDF0DC">🌅</div>
+          <div><h4>Mañana</h4><p id="ctx-morning-sub">Sin notas registradas hoy</p></div>
+        </div>
+        <span class="ctx-chevron" id="ctx-morning-chev">▼</span>
+      </div>
+      <div class="ctx-body" id="ctx-morning-body">
+        <div class="ctx-row" id="ctx-morning-r1" style="display:none"><div class="ctx-row-label">Estado al despertar</div><div class="ctx-row-value" id="ctx-morning-v1"></div></div>
+        <div class="ctx-row" id="ctx-morning-r2" style="display:none"><div class="ctx-row-label">Anclajes propios</div><div class="ctx-row-value" id="ctx-morning-v2"></div></div>
+        <div class="ctx-row" id="ctx-morning-r3" style="display:none"><div class="ctx-row-label">Vaciado mental</div><div class="ctx-row-value" id="ctx-morning-v3"></div></div>
+        <p class="ctx-empty" id="ctx-morning-empty">Aún no has registrado notas de la mañana hoy.</p>
+      </div>
+    </div>
+
+    <div class="ctx-panel" id="ctx-midday" style="margin-top:8px">
+      <div class="ctx-header" onclick="toggleCtx('midday')">
+        <div class="ctx-header-left">
+          <div class="ctx-header-icon" style="background:#EDF2EC">☀️</div>
+          <div><h4>Mediodía</h4><p id="ctx-midday-sub">Sin notas registradas hoy</p></div>
+        </div>
+        <span class="ctx-chevron" id="ctx-midday-chev">▼</span>
+      </div>
+      <div class="ctx-body" id="ctx-midday-body">
+        <div class="ctx-row" id="ctx-midday-r1" style="display:none"><div class="ctx-row-label">Estado al mediodía</div><div class="ctx-row-value" id="ctx-midday-v1"></div></div>
+        <div class="ctx-row" id="ctx-midday-r2" style="display:none"><div class="ctx-row-label">3 cosas presentes</div><div class="ctx-row-value" id="ctx-midday-v2"></div></div>
+        <div class="ctx-row" id="ctx-midday-r3" style="display:none"><div class="ctx-row-label">Acción elegida</div><div class="ctx-row-value" id="ctx-midday-v3"></div></div>
+        <p class="ctx-empty" id="ctx-midday-empty">Aún no has registrado notas del mediodía hoy.</p>
+      </div>
+    </div>
+
+    <div class="ctx-panel" id="ctx-night" style="margin-top:8px">
+      <div class="ctx-header" onclick="toggleCtx('night')">
+        <div class="ctx-header-left">
+          <div class="ctx-header-icon" style="background:#2C3440">🌙</div>
+          <div><h4>Noche</h4><p id="ctx-night-sub">Sin notas registradas hoy</p></div>
+        </div>
+        <span class="ctx-chevron" id="ctx-night-chev">▼</span>
+      </div>
+      <div class="ctx-body" id="ctx-night-body">
+        <div class="ctx-row" id="ctx-night-r1" style="display:none"><div class="ctx-row-label">Estado del día</div><div class="ctx-row-value" id="ctx-night-v1"></div></div>
+        <div class="ctx-row" id="ctx-night-r2" style="display:none"><div class="ctx-row-label">Espiral y detonador</div><div class="ctx-row-value" id="ctx-night-v2"></div></div>
+        <div class="ctx-row" id="ctx-night-r3" style="display:none"><div class="ctx-row-label">Avance propio</div><div class="ctx-row-value" id="ctx-night-v3"></div></div>
+        <div class="ctx-row" id="ctx-night-r4" style="display:none"><div class="ctx-row-label">¿Quién he sido esta semana?</div><div class="ctx-row-value" id="ctx-night-v4"></div></div>
+        <p class="ctx-empty" id="ctx-night-empty">Aún no has registrado notas de la noche hoy.</p>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- HISTORIAL -->
@@ -635,177 +948,413 @@
 
 <!-- PROYECTO -->
 <div id="proyecto" class="section">
-  <p class="section-intro">No buscas "un propósito". Exploras durante 3 meses. Dos microexploraciones, 2–3 horas semanales cada una. Sin presión de resultado, solo curiosidad activa.</p>
+  <p class="section-intro">El propósito se descubre actuando, no solo reflexionando. 3 fases de 30 días para explorar qué te da energía, qué impacto generas y dónde se cruzan tu talento, tu curiosidad y los demás.</p>
 
-  <!-- STATS GLOBALES -->
-  <div class="proj-stats">
-    <div class="proj-stat">
-      <div class="stat-val" id="statWeeks" style="color:#4A7FA8">0</div>
-      <div class="stat-label">Semanas activas</div>
+  <!-- FASE TABS -->
+  <div class="phase-tabs" id="phaseTabs">
+    <button class="phase-tab active" onclick="switchPhase(1,this)">
+      <span class="phase-num">1</span>
+      <span class="phase-name">Exploración</span>
+      <span class="phase-weeks">Sem 1–4</span>
+    </button>
+    <button class="phase-tab" onclick="switchPhase(2,this)">
+      <span class="phase-num">2</span>
+      <span class="phase-name">Experimentación</span>
+      <span class="phase-weeks">Sem 5–8</span>
+    </button>
+    <button class="phase-tab" onclick="switchPhase(3,this)">
+      <span class="phase-num">3</span>
+      <span class="phase-name">Integración</span>
+      <span class="phase-weeks">Sem 9–12</span>
+    </button>
+  </div>
+
+  <!-- ═══ FASE 1 ═══ -->
+  <div class="phase-panel active" id="phase1">
+    <div class="phase-intro-box" style="background:linear-gradient(135deg,#FDF5EE,#F7F4EE);border:1px solid rgba(196,133,90,.15)">
+      <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--terracotta);margin-bottom:6px">Objetivo de la fase</div>
+      <p style="font-size:14px;color:var(--warm-dark);line-height:1.6">Probar áreas que despierten curiosidad o energía. Sin presión de resultado, solo observación activa de cómo te sientes haciendo cada cosa.</p>
     </div>
-    <div class="proj-stat">
-      <div class="stat-val" id="statHoursIA" style="color:#4A7FA8">0h</div>
-      <div class="stat-label">Horas en IA</div>
+
+    <div id="phase1ProjectsList"></div>
+
+    <button class="add-proj-btn" onclick="openAddProject()">+ Añadir proyecto experimental</button>
+
+    <!-- MODAL AÑADIR PROYECTO -->
+    <div class="proj-modal-overlay" id="projModalOverlay" onclick="closeProjModal()"></div>
+    <div class="proj-modal" id="projModal">
+      <div class="proj-modal-header">
+        <h3>Nuevo proyecto experimental</h3>
+        <button onclick="closeProjModal()" style="border:none;background:none;font-size:18px;cursor:pointer;color:var(--warm-mid)">✕</button>
+      </div>
+      <div class="proj-modal-body">
+        <div class="pm-field"><label>Nombre del proyecto</label><input type="text" id="pmName" placeholder="Ej: Investigar y explicar un tema complejo"></div>
+        <div class="pm-field"><label>Hipótesis personal</label><input type="text" id="pmHypothesis" placeholder='Ej: "Disfruto aprendiendo y explicando cosas complejas."'></div>
+        <div class="pm-field"><label>Duración</label>
+          <select id="pmDuration">
+            <option value="7">7 días</option>
+            <option value="14" selected>14 días</option>
+            <option value="21">21 días</option>
+            <option value="28">28 días</option>
+          </select>
+        </div>
+        <div class="pm-field"><label>Acciones concretas</label><textarea id="pmActions" placeholder="Una por línea. Ej:&#10;Investigar 3 temas que me interesen&#10;Escribir un resumen&#10;Explicarlo a alguien o en LinkedIn"></textarea></div>
+        <div class="pm-field"><label>Indicadores a observar</label><textarea id="pmIndicators" placeholder="¿Qué vas a medir? Ej:&#10;Motivación al empezar&#10;Disfrute durante el proceso&#10;Feedback recibido"></textarea></div>
+        <div style="display:flex;gap:10px;margin-top:4px">
+          <div class="pm-field" style="flex:1"><label>Fecha inicio</label><input type="date" id="pmStartDate"></div>
+        </div>
+        <button class="pm-save-btn" onclick="saveNewProject()">Guardar proyecto</button>
+      </div>
     </div>
-    <div class="proj-stat">
-      <div class="stat-val" id="statHoursImpact" style="color:#7B6FAA">0h</div>
-      <div class="stat-label">Horas en Impacto</div>
+
+    <!-- EJEMPLOS -->
+    <div class="proj-section-divider"><span>Ejemplos de proyectos</span></div>
+    <div class="example-proj-card" onclick="prefillProject('investigar')">
+      <div class="epc-top"><span class="epc-num">1</span><div><h4>Investigar y explicar un tema complejo</h4><p class="epc-hyp">"Disfruto aprendiendo y explicando temas complejos."</p></div></div>
+      <div class="epc-tags"><span>Motivación</span><span>Disfrute</span><span>Feedback</span></div>
+    </div>
+    <div class="example-proj-card" onclick="prefillProject('crear')">
+      <div class="epc-top"><span class="epc-num">2</span><div><h4>Crear algo tangible</h4><p class="epc-hyp">"Me siento realizada cuando creo algo concreto."</p></div></div>
+      <div class="epc-tags"><span>Escritura</span><span>Diseño</span><span>IA</span><span>Guía</span></div>
+    </div>
+    <div class="example-proj-card" onclick="prefillProject('ayudar')">
+      <div class="epc-top"><span class="epc-num">3</span><div><h4>Ayudar a alguien</h4><p class="epc-hyp">"Mi propósito puede estar en ayudar a otros."</p></div></div>
+      <div class="epc-tags"><span>Asesoría</span><span>Mentoring</span><span>Problema real</span></div>
+    </div>
+
+    <div class="proj-rule-box">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">⚙️ Regla de cada proyecto</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div class="proj-rule-item">⏱ Durar menos de 4 semanas</div>
+        <div class="proj-rule-item">📦 Producir algo tangible</div>
+        <div class="proj-rule-item">🌍 Implicar interacción con el mundo real</div>
+      </div>
+    </div>
+
+    <!-- SEGUIMIENTO DIARIO FASE 1 -->
+    <div class="proj-section-divider"><span>Seguimiento diario</span></div>
+    <div class="tracking-card">
+      <div class="tc-header" onclick="toggleTrack('p1daily')">
+        <div class="tc-header-left"><span class="tc-icon">📝</span><div><div class="tc-title">Check-in de hoy</div><div class="tc-sub" id="p1daily_sub">Registra cómo fue la sesión de hoy</div></div></div>
+        <span class="tc-chev" id="p1daily_chev">▼</span>
+      </div>
+      <div class="tc-body" id="p1daily">
+        <div class="tq-row"><div class="tq-label">¿Trabajé en algún proyecto hoy?</div>
+          <div class="tq-options" id="p1_worked">
+            <button class="tq-opt" onclick="setTQ('p1','worked','sí',this)">Sí</button>
+            <button class="tq-opt" onclick="setTQ('p1','worked','no',this)">No</button>
+            <button class="tq-opt" onclick="setTQ('p1','worked','un poco',this)">Un poco</button>
+          </div>
+        </div>
+        <div class="tq-row"><div class="tq-label">¿Cuánto tiempo? (minutos)</div>
+          <input type="number" class="tq-input" id="p1_minutes" min="0" max="480" placeholder="30" oninput="autoSaveTQ('p1','minutes',this.value)">
+        </div>
+        <div class="tq-row"><div class="tq-label">¿Cómo fue la energía al hacerlo?</div>
+          <div class="tq-options" id="p1_energy_daily">
+            <button class="tq-opt" onclick="setTQ('p1','energy_daily','alta',this)">⚡ Alta</button>
+            <button class="tq-opt" onclick="setTQ('p1','energy_daily','media',this)">➡️ Media</button>
+            <button class="tq-opt" onclick="setTQ('p1','energy_daily','baja',this)">🔋 Baja</button>
+          </div>
+        </div>
+        <div class="tq-row"><div class="tq-label">¿Qué hice concretamente?</div>
+          <textarea class="tq-text" id="p1_what" placeholder="Una línea basta..." oninput="autoSaveTQ('p1','what',this.value)"></textarea>
+        </div>
+        <div class="tq-row"><div class="tq-label">¿Qué nota me pondría hoy? (1–10)</div>
+          <div class="tq-score" id="p1_score_daily">
+            <button class="tqs-btn" onclick="setTQ('p1','score_daily',1,this)">1</button><button class="tqs-btn" onclick="setTQ('p1','score_daily',2,this)">2</button><button class="tqs-btn" onclick="setTQ('p1','score_daily',3,this)">3</button><button class="tqs-btn" onclick="setTQ('p1','score_daily',4,this)">4</button><button class="tqs-btn" onclick="setTQ('p1','score_daily',5,this)">5</button><button class="tqs-btn" onclick="setTQ('p1','score_daily',6,this)">6</button><button class="tqs-btn" onclick="setTQ('p1','score_daily',7,this)">7</button><button class="tqs-btn" onclick="setTQ('p1','score_daily',8,this)">8</button><button class="tqs-btn" onclick="setTQ('p1','score_daily',9,this)">9</button><button class="tqs-btn" onclick="setTQ('p1','score_daily',10,this)">10</button>
+          </div>
+        </div>
+        <button class="tc-save-btn" onclick="saveDailyTracking('p1')">Guardar check-in</button>
+      </div>
+    </div>
+
+    <!-- SEGUIMIENTO SEMANAL FASE 1 -->
+    <div class="tracking-card" style="margin-top:10px">
+      <div class="tc-header" onclick="toggleTrack('p1weekly')">
+        <div class="tc-header-left"><span class="tc-icon">📊</span><div><div class="tc-title">Revisión semanal</div><div class="tc-sub">Reflexión profunda cada 7 días</div></div></div>
+        <span class="tc-chev" id="p1weekly_chev">▼</span>
+      </div>
+      <div class="tc-body" id="p1weekly">
+        <div class="tq-row"><div class="tq-label">¿Probé algo nuevo esta semana?</div>
+          <textarea class="tq-text" id="p1w_new" placeholder="¿Qué exploré que no había hecho antes?" oninput="autoSaveWQ('p1','new',this.value)"></textarea>
+        </div>
+        <div class="tq-row"><div class="tq-label">¿Qué momento tuvo más energía?</div>
+          <textarea class="tq-text" id="p1w_peak" placeholder="El momento exacto donde más me activé fue..." oninput="autoSaveWQ('p1','peak',this.value)"></textarea>
+        </div>
+        <div class="tq-row"><div class="tq-label">¿Qué me costó más?</div>
+          <textarea class="tq-text" id="p1w_hard" placeholder="Lo que me resultó difícil o me frenó..." oninput="autoSaveWQ('p1','hard',this.value)"></textarea>
+        </div>
+        <div class="tq-row"><div class="tq-label">¿Repetirías esto la semana que viene?</div>
+          <div class="tq-options" id="p1w_repeat">
+            <button class="tq-opt" onclick="setWQ('p1','repeat','sí, con ganas',this)">Sí, con ganas</button>
+            <button class="tq-opt" onclick="setWQ('p1','repeat','sí pero ajustando',this)">Ajustando</button>
+            <button class="tq-opt" onclick="setWQ('p1','repeat','no',this)">No</button>
+          </div>
+        </div>
+        <div class="tq-row"><div class="tq-label">¿Valida o refuta tu hipótesis?</div>
+          <div class="tq-options" id="p1w_hyp">
+            <button class="tq-opt" onclick="setWQ('p1','hyp','la valida',this)">La valida</button>
+            <button class="tq-opt" onclick="setWQ('p1','hyp','la matiza',this)">La matiza</button>
+            <button class="tq-opt" onclick="setWQ('p1','hyp','la refuta',this)">La refuta</button>
+          </div>
+        </div>
+        <button class="tc-save-btn" onclick="saveWeeklyTracking('p1')">Guardar revisión semanal</button>
+        <button class="tc-ai-btn" onclick="generatePhaseAI('p1','Exploración')">✦ Generar análisis con IA</button>
+        <div id="p1_ai_result" class="tc-ai-result" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- EVOLUCIÓN FASE 1 -->
+    <div class="proj-section-divider"><span>Evolución de la fase</span></div>
+    <div class="evolution-card" id="p1_evolution">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--warm-mid);margin-bottom:12px">Puntuación diaria</div>
+      <div id="p1_chart" style="display:flex;align-items:flex-end;gap:4px;height:50px;margin-bottom:8px"></div>
+      <div id="p1_stats" style="display:flex;gap:12px;flex-wrap:wrap"></div>
     </div>
   </div>
 
-  <!-- EXPLORACIÓN 1: IA -->
-  <div class="proj-hero proj-hero-ia">
-    <span class="proj-tag proj-tag-ia">Exploración 1 · 3 meses</span>
-    <h2>Nuevas aplicaciones de la IA</h2>
-    <p>Descubrir cómo la IA puede potenciar tu trabajo en marketing, abrir nuevas posibilidades y convertirse en una ventaja competitiva real.</p>
-    <div class="proj-meta">
-      <span class="proj-badge proj-badge-ia">⏱ 2–3h semanales</span>
-      <span class="proj-badge proj-badge-ia">🗓 12 semanas</span>
-      <span class="proj-badge proj-badge-ia" id="iaWeekBadge">Semana 1 de 12</span>
+  <!-- ═══ FASE 2 ═══ -->
+  <div class="phase-panel" id="phase2">
+    <div class="phase-intro-box" style="background:linear-gradient(135deg,#EDF5F8,#EEF4F7);border:1px solid rgba(74,127,168,.15)">
+      <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#4A7FA8;margin-bottom:6px">Objetivo de la fase</div>
+      <p style="font-size:14px;color:var(--warm-dark);line-height:1.6">Profundizar en los 2 proyectos que más energía te generaron en la fase anterior. Ahora se trata de expandirlos con más intención.</p>
+    </div>
+
+    <div style="font-size:13px;color:var(--warm-mid);margin-bottom:16px;line-height:1.6">Selecciona los 2 proyectos de la Fase 1 que más te activaron y completa los campos ampliados.</div>
+
+    <div id="phase2ProjectsList"></div>
+    <button class="add-proj-btn" style="background:#EDF5F8;color:#4A7FA8;border-color:rgba(74,127,168,.2)" onclick="openAddPhase2Project()">+ Añadir proyecto de fase 2</button>
+
+    <div class="proj-modal-overlay" id="proj2ModalOverlay" onclick="closeProj2Modal()"></div>
+    <div class="proj-modal" id="proj2Modal">
+      <div class="proj-modal-header">
+        <h3>Proyecto ampliado</h3>
+        <button onclick="closeProj2Modal()" style="border:none;background:none;font-size:18px;cursor:pointer;color:var(--warm-mid)">✕</button>
+      </div>
+      <div class="proj-modal-body">
+        <div class="pm-field"><label>Nombre del proyecto</label><input type="text" id="pm2Name" placeholder="Ej: Explicar el mundo de forma clara"></div>
+        <div class="pm-field"><label>Objetivo de esta fase</label><input type="text" id="pm2Goal" placeholder="¿Qué quieres lograr específicamente?"></div>
+        <div class="pm-field"><label>Problema que resuelve</label><input type="text" id="pm2Problem" placeholder="¿Qué problema real aborda este proyecto?"></div>
+        <div class="pm-field"><label>Personas a las que ayuda</label><input type="text" id="pm2Audience" placeholder="¿A quién beneficia? ¿Quién se lo agradecería?"></div>
+        <div class="pm-field"><label>Resultado tangible</label><input type="text" id="pm2Result" placeholder="¿Qué existirá al final que no existe ahora?"></div>
+        <div class="pm-field"><label>Acciones concretas</label><textarea id="pm2Actions" placeholder="Ej:&#10;Publicar 4 reflexiones sobre actualidad&#10;Explicar un tema complejo de forma simple&#10;Medir interacción generada"></textarea></div>
+        <button class="pm-save-btn" onclick="savePhase2Project()">Guardar</button>
+      </div>
+    </div>
+
+    <div class="proj-section-divider"><span>Ejemplo de expansión</span></div>
+    <div class="example-proj-card" style="border-color:rgba(74,127,168,.2)">
+      <div class="epc-top"><span class="epc-num" style="background:#EDF5F8;color:#4A7FA8">→</span><div><h4>Explicar el mundo de forma clara</h4><p class="epc-hyp">4 reflexiones publicadas · Temas complejos en lenguaje simple · Medir conversaciones generadas</p></div></div>
+    </div>
+
+    <!-- SEGUIMIENTO DIARIO FASE 2 -->
+    <div class="proj-section-divider"><span>Seguimiento diario</span></div>
+    <div class="tracking-card" style="border-color:rgba(74,127,168,.15)">
+      <div class="tc-header" onclick="toggleTrack('p2daily')">
+        <div class="tc-header-left"><span class="tc-icon" style="background:#EDF5F8">📝</span><div><div class="tc-title" style="color:#4A7FA8">Check-in de hoy</div><div class="tc-sub">¿Avancé en mi proyecto ampliado?</div></div></div>
+        <span class="tc-chev" id="p2daily_chev">▼</span>
+      </div>
+      <div class="tc-body" id="p2daily">
+        <div class="tq-row"><div class="tq-label">¿Trabajé en el proyecto hoy?</div>
+          <div class="tq-options" id="p2_worked">
+            <button class="tq-opt" onclick="setTQ('p2','worked','sí',this)">Sí</button>
+            <button class="tq-opt" onclick="setTQ('p2','worked','no',this)">No</button>
+            <button class="tq-opt" onclick="setTQ('p2','worked','un poco',this)">Un poco</button>
+          </div>
+        </div>
+        <div class="tq-row"><div class="tq-label">¿Hubo interacción real con alguien?</div>
+          <div class="tq-options" id="p2_interaction">
+            <button class="tq-opt" onclick="setTQ('p2','interaction','sí',this)">Sí</button>
+            <button class="tq-opt" onclick="setTQ('p2','interaction','no',this)">No</button>
+          </div>
+        </div>
+        <div class="tq-row"><div class="tq-label">¿Avancé hacia el resultado tangible?</div>
+          <div class="tq-options" id="p2_progress">
+            <button class="tq-opt" onclick="setTQ('p2','progress','mucho',this)">Mucho</button>
+            <button class="tq-opt" onclick="setTQ('p2','progress','algo',this)">Algo</button>
+            <button class="tq-opt" onclick="setTQ('p2','progress','poco',this)">Poco</button>
+            <button class="tq-opt" onclick="setTQ('p2','progress','nada',this)">Nada</button>
+          </div>
+        </div>
+        <div class="tq-row"><div class="tq-label">¿Qué hice concretamente?</div>
+          <textarea class="tq-text" id="p2_what" placeholder="Acción específica de hoy..." oninput="autoSaveTQ('p2','what',this.value)"></textarea>
+        </div>
+        <div class="tq-row"><div class="tq-label">Nota del día (1–10)</div>
+          <div class="tq-score" id="p2_score_daily">
+            <button class="tqs-btn" onclick="setTQ('p2','score_daily',1,this)">1</button><button class="tqs-btn" onclick="setTQ('p2','score_daily',2,this)">2</button><button class="tqs-btn" onclick="setTQ('p2','score_daily',3,this)">3</button><button class="tqs-btn" onclick="setTQ('p2','score_daily',4,this)">4</button><button class="tqs-btn" onclick="setTQ('p2','score_daily',5,this)">5</button><button class="tqs-btn" onclick="setTQ('p2','score_daily',6,this)">6</button><button class="tqs-btn" onclick="setTQ('p2','score_daily',7,this)">7</button><button class="tqs-btn" onclick="setTQ('p2','score_daily',8,this)">8</button><button class="tqs-btn" onclick="setTQ('p2','score_daily',9,this)">9</button><button class="tqs-btn" onclick="setTQ('p2','score_daily',10,this)">10</button>
+          </div>
+        </div>
+        <button class="tc-save-btn" style="background:#4A7FA8" onclick="saveDailyTracking('p2')">Guardar check-in</button>
+      </div>
+    </div>
+
+    <!-- SEGUIMIENTO SEMANAL FASE 2 -->
+    <div class="tracking-card" style="margin-top:10px;border-color:rgba(74,127,168,.15)">
+      <div class="tc-header" onclick="toggleTrack('p2weekly')">
+        <div class="tc-header-left"><span class="tc-icon" style="background:#EDF5F8">📊</span><div><div class="tc-title" style="color:#4A7FA8">Revisión semanal</div><div class="tc-sub">¿Se está profundizando la hipótesis?</div></div></div>
+        <span class="tc-chev" id="p2weekly_chev">▼</span>
+      </div>
+      <div class="tc-body" id="p2weekly">
+        <div class="tq-row"><div class="tq-label">¿Qué aprendí sobre el problema que resuelvo?</div>
+          <textarea class="tq-text" id="p2w_problem" placeholder="¿El problema era el que pensaba?" oninput="autoSaveWQ('p2','problem',this.value)"></textarea>
+        </div>
+        <div class="tq-row"><div class="tq-label">¿Cómo reaccionó la persona o entorno a mi trabajo?</div>
+          <textarea class="tq-text" id="p2w_reaction" placeholder="Feedback real, explícito o implícito..." oninput="autoSaveWQ('p2','reaction',this.value)"></textarea>
+        </div>
+        <div class="tq-row"><div class="tq-label">¿Qué ajustaría la próxima semana?</div>
+          <textarea class="tq-text" id="p2w_adjust" placeholder="Una cosa concreta a cambiar o mejorar..." oninput="autoSaveWQ('p2','adjust',this.value)"></textarea>
+        </div>
+        <div class="tq-row"><div class="tq-label">¿Este proyecto tiene futuro más allá de 8 semanas?</div>
+          <div class="tq-options" id="p2w_future">
+            <button class="tq-opt" onclick="setWQ('p2','future','sí claramente',this)">Sí claramente</button>
+            <button class="tq-opt" onclick="setWQ('p2','future','quizás',this)">Quizás</button>
+            <button class="tq-opt" onclick="setWQ('p2','future','no',this)">No</button>
+          </div>
+        </div>
+        <button class="tc-save-btn" style="background:#4A7FA8" onclick="saveWeeklyTracking('p2')">Guardar revisión</button>
+        <button class="tc-ai-btn" style="border-color:rgba(74,127,168,.3);color:#4A7FA8" onclick="generatePhaseAI('p2','Experimentación')">✦ Generar análisis con IA</button>
+        <div id="p2_ai_result" class="tc-ai-result" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- EVOLUCIÓN FASE 2 -->
+    <div class="proj-section-divider"><span>Evolución de la fase</span></div>
+    <div class="evolution-card" style="border-color:rgba(74,127,168,.1)">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#4A7FA8;margin-bottom:12px">Progresión diaria</div>
+      <div id="p2_chart" style="display:flex;align-items:flex-end;gap:4px;height:50px;margin-bottom:8px"></div>
+      <div id="p2_stats" style="display:flex;gap:12px;flex-wrap:wrap"></div>
     </div>
   </div>
 
-  <!-- TIMELINE IA -->
-  <div class="card">
-    <div class="timeline-header">
-      <h3>Línea de progreso — IA</h3>
-      <span id="iaPct">0% completado</span>
+  <!-- ═══ FASE 3 ═══ -->
+  <div class="phase-panel" id="phase3">
+    <div class="phase-intro-box" style="background:linear-gradient(135deg,#F2EFF8,#EEF0F5);border:1px solid rgba(123,111,170,.15)">
+      <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#7B6FAA;margin-bottom:6px">Objetivo de la fase</div>
+      <p style="font-size:14px;color:var(--warm-dark);line-height:1.6">Detectar patrones de propósito. Qué actividades te dan más energía, qué tipo de impacto generas y dónde se cruzan talento, curiosidad e impacto.</p>
     </div>
-    <div class="timeline-track">
-      <div class="timeline-line"></div>
-      <div class="timeline-fill timeline-fill-ia" id="iaFill" style="width:0%"></div>
-      <div class="timeline-weeks" id="iaWeeks"></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;padding:0 20px;margin-top:6px">
-      <span style="font-size:11px;color:var(--warm-mid)">Mes 1</span>
-      <span style="font-size:11px;color:var(--warm-mid)">Mes 2</span>
-      <span style="font-size:11px;color:var(--warm-mid)">Mes 3</span>
-    </div>
-  </div>
 
-  <!-- SESIONES SEMANALES IA -->
-  <div class="week-sessions">
-    <h4>Sesiones esta semana — IA</h4>
-    <div id="iaSessionsList"></div>
-    <button class="log-entry-btn log-btn-ia" onclick="toggleLogForm('ia')">+ Registrar sesión</button>
-    <div class="log-form" id="logFormIA">
-      <div class="journal-label">¿Qué exploraste hoy?</div>
-      <textarea id="logTextIA" placeholder="Herramienta que probaste, lo que aprendiste, una idea que surgió..."></textarea>
-      <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
-        <select id="logHoursIA" style="padding:8px 12px;border-radius:20px;border:1px solid rgba(0,0,0,.1);font-family:'DM Sans',sans-serif;font-size:12px;background:white;outline:none;color:var(--warm-dark)">
-          <option value="1">1 hora</option><option value="1.5">1.5 horas</option>
-          <option value="2" selected>2 horas</option><option value="2.5">2.5 horas</option><option value="3">3 horas</option>
-        </select>
-        <button class="log-submit-btn log-submit-ia" onclick="submitLog('ia')">Guardar</button>
+    <!-- SEGUIMIENTO DIARIO FASE 3 -->
+    <div class="proj-section-divider"><span>Seguimiento diario</span></div>
+    <div class="tracking-card" style="border-color:rgba(123,111,170,.15)">
+      <div class="tc-header" onclick="toggleTrack('p3daily')">
+        <div class="tc-header-left"><span class="tc-icon" style="background:#F2EFF8">📝</span><div><div class="tc-title" style="color:#7B6FAA">Check-in de hoy</div><div class="tc-sub">Integración diaria de patrones</div></div></div>
+        <span class="tc-chev" id="p3daily_chev">▼</span>
+      </div>
+      <div class="tc-body" id="p3daily">
+        <div class="tq-row"><div class="tq-label">¿Practiqué alguna habilidad identificada hoy?</div>
+          <div class="tq-options" id="p3_skill">
+            <button class="tq-opt" onclick="setTQ('p3','skill','sí',this)">Sí</button>
+            <button class="tq-opt" onclick="setTQ('p3','skill','no',this)">No</button>
+          </div>
+        </div>
+        <div class="tq-row"><div class="tq-label">¿Hubo un momento de "esto soy yo"?</div>
+          <div class="tq-options" id="p3_iam">
+            <button class="tq-opt" onclick="setTQ('p3','iam','sí, muy claro',this)">Sí, muy claro</button>
+            <button class="tq-opt" onclick="setTQ('p3','iam','un poco',this)">Un poco</button>
+            <button class="tq-opt" onclick="setTQ('p3','iam','no',this)">No</button>
+          </div>
+        </div>
+        <div class="tq-row"><div class="tq-label">¿En qué momento perdí la noción del tiempo?</div>
+          <textarea class="tq-text" id="p3_flow" placeholder="Describe la actividad concreta..." oninput="autoSaveTQ('p3','flow',this.value)"></textarea>
+        </div>
+        <div class="tq-row"><div class="tq-label">Nota del día (1–10)</div>
+          <div class="tq-score" id="p3_score_daily">
+            <button class="tqs-btn" onclick="setTQ('p3','score_daily',1,this)">1</button><button class="tqs-btn" onclick="setTQ('p3','score_daily',2,this)">2</button><button class="tqs-btn" onclick="setTQ('p3','score_daily',3,this)">3</button><button class="tqs-btn" onclick="setTQ('p3','score_daily',4,this)">4</button><button class="tqs-btn" onclick="setTQ('p3','score_daily',5,this)">5</button><button class="tqs-btn" onclick="setTQ('p3','score_daily',6,this)">6</button><button class="tqs-btn" onclick="setTQ('p3','score_daily',7,this)">7</button><button class="tqs-btn" onclick="setTQ('p3','score_daily',8,this)">8</button><button class="tqs-btn" onclick="setTQ('p3','score_daily',9,this)">9</button><button class="tqs-btn" onclick="setTQ('p3','score_daily',10,this)">10</button>
+          </div>
+        </div>
+        <button class="tc-save-btn" style="background:#7B6FAA" onclick="saveDailyTracking('p3')">Guardar check-in</button>
+      </div>
+    </div>
+
+    <!-- SEGUIMIENTO SEMANAL FASE 3 -->
+    <div class="tracking-card" style="margin-top:10px;border-color:rgba(123,111,170,.15)">
+      <div class="tc-header" onclick="toggleTrack('p3weekly')">
+        <div class="tc-header-left"><span class="tc-icon" style="background:#F2EFF8">📊</span><div><div class="tc-title" style="color:#7B6FAA">Revisión semanal</div><div class="tc-sub">¿Qué patrón de propósito se confirma?</div></div></div>
+        <span class="tc-chev" id="p3weekly_chev">▼</span>
+      </div>
+      <div class="tc-body" id="p3weekly">
+        <div class="tq-row"><div class="tq-label">¿Qué patrón se repite esta semana?</div>
+          <textarea class="tq-text" id="p3w_pattern" placeholder="Una habilidad, un tipo de tarea, un entorno..." oninput="autoSaveWQ('p3','pattern',this.value)"></textarea>
+        </div>
+        <div class="tq-row"><div class="tq-label">¿Dónde generé más impacto?</div>
+          <textarea class="tq-text" id="p3w_impact" placeholder="¿En qué momento noté que algo cambió en otra persona o en mí?" oninput="autoSaveWQ('p3','impact',this.value)"></textarea>
+        </div>
+        <div class="tq-row"><div class="tq-label">¿Se confirma o cambia tu hipótesis de propósito?</div>
+          <textarea class="tq-text" id="p3w_purpose" placeholder="¿Tu idea del propósito es la misma que hace 2 meses?" oninput="autoSaveWQ('p3','purpose',this.value)"></textarea>
+        </div>
+        <div class="tq-row"><div class="tq-label">¿Qué actividad harías aunque no te pagaran?</div>
+          <textarea class="tq-text" id="p3w_free" placeholder="Sin filtro. La primera que te venga." oninput="autoSaveWQ('p3','free',this.value)"></textarea>
+        </div>
+        <button class="tc-save-btn" style="background:#7B6FAA" onclick="saveWeeklyTracking('p3')">Guardar revisión</button>
+        <button class="tc-ai-btn" style="border-color:rgba(123,111,170,.3);color:#7B6FAA" onclick="generatePhaseAI('p3','Integración')">✦ Generar análisis con IA</button>
+        <div id="p3_ai_result" class="tc-ai-result" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- EVOLUCIÓN FASE 3 -->
+    <div class="proj-section-divider"><span>Evolución de la fase</span></div>
+    <div class="evolution-card" style="border-color:rgba(123,111,170,.1)">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#7B6FAA;margin-bottom:12px">Progresión diaria</div>
+      <div id="p3_chart" style="display:flex;align-items:flex-end;gap:4px;height:50px;margin-bottom:8px"></div>
+      <div id="p3_stats" style="display:flex;gap:12px;flex-wrap:wrap"></div>
+    </div>
+
+    <!-- MÉTRICAS POR PROYECTO -->
+    <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--warm-mid);margin-bottom:12px">Evalúa tus proyectos (1–10)</div>
+    <div id="phase3EvalList"></div>
+
+    <!-- PANEL DE INSIGHTS -->
+    <div class="proj-section-divider"><span>Panel de insights</span></div>
+    <div class="insights-grid">
+      <div class="insight-card" id="ins1"><div class="ins-icon">⚡</div><div class="ins-label">Actividades con más energía</div><div class="ins-val" id="insEnergy">—</div></div>
+      <div class="insight-card" id="ins2"><div class="ins-icon">🎯</div><div class="ins-label">Tipo de impacto generado</div><div class="ins-val" id="insImpact">—</div></div>
+      <div class="insight-card" id="ins3"><div class="ins-icon">🔧</div><div class="ins-label">Habilidades que más se repiten</div><div class="ins-val" id="insSkills">—</div></div>
+      <div class="insight-card" id="ins4"><div class="ins-icon">🌍</div><div class="ins-label">Entornos donde te sientes más útil</div><div class="ins-val" id="insEnv">—</div></div>
+    </div>
+
+    <!-- NOTAS DE INTEGRACIÓN -->
+    <div class="proj-section-divider"><span>Tus reflexiones finales</span></div>
+    <div class="journal-card">
+      <div class="journal-label">¿Qué actividades te dieron más energía?</div>
+      <textarea id="ins_energy_notes" placeholder="Las actividades donde el tiempo volaba..." oninput="saveInsightNotes()"></textarea>
+    </div>
+    <div class="journal-card">
+      <div class="journal-label">¿Qué tipo de impacto generaste?</div>
+      <textarea id="ins_impact_notes" placeholder="Cómo afectaste o ayudaste a otros..." oninput="saveInsightNotes()"></textarea>
+    </div>
+    <div class="journal-card">
+      <div class="journal-label">¿Qué habilidades usaste más?</div>
+      <textarea id="ins_skills_notes" placeholder="Analizar, explicar, crear, conectar, organizar..." oninput="saveInsightNotes()"></textarea>
+    </div>
+    <div class="journal-card">
+      <div class="journal-label">¿Dónde te sentiste más útil?</div>
+      <textarea id="ins_env_notes" placeholder="Contextos, personas, entornos, formatos..." oninput="saveInsightNotes()"></textarea>
+    </div>
+
+    <!-- DASHBOARD FINAL -->
+    <div class="proj-section-divider"><span>Dashboard 90 días</span></div>
+    <div class="dashboard-box" id="dashboardBox">
+      <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:14px">✦ Tu propósito puede estar relacionado con</div>
+      <div id="dashboardContent"><p style="font-size:13px;color:rgba(247,244,238,.5);font-style:italic">Completa las métricas de tus proyectos y las reflexiones para que el sistema detecte patrones.</p></div>
+      <button class="pm-save-btn" style="margin-top:16px;background:rgba(201,169,110,.2);color:var(--gold);border:1px solid rgba(201,169,110,.3)" onclick="generateDashboard()">Generar análisis de propósito con IA</button>
+    </div>
+
+    <div class="talent-box">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage);margin-bottom:12px">💡 La clave</div>
+      <p style="font-size:14px;color:rgba(247,244,238,.85);line-height:1.7;font-family:'Inter','DM Sans',sans-serif;font-weight:300">Las personas descubren su propósito cuando coinciden tres cosas:</p>
+      <div class="talent-trio">
+        <div class="talent-item"><div class="talent-icon" style="background:rgba(196,133,90,.2);color:#E8C4A8">💪</div><span>Talento</span></div>
+        <div class="talent-plus">+</div>
+        <div class="talent-item"><div class="talent-icon" style="background:rgba(138,158,133,.2);color:#B8C9B4">🔍</div><span>Curiosidad</span></div>
+        <div class="talent-plus">+</div>
+        <div class="talent-item"><div class="talent-icon" style="background:rgba(123,111,170,.2);color:#B8ADDC">🤝</div><span>Impacto en otros</span></div>
       </div>
     </div>
   </div>
 
-  <!-- IDEAS IA -->
-  <div class="proj-section-divider"><span>Ideas para explorar · IA</span></div>
-  <div class="ideas-grid">
-    <div class="idea-card"><div class="idea-icon">🤖</div><h4>Automatizar tareas de marketing</h4><p>Usa IA para crear briefs, copys o análisis de competencia automáticamente.</p></div>
-    <div class="idea-card"><div class="idea-icon">📊</div><h4>Análisis de datos con IA</h4><p>Explora cómo interpretar métricas y tendencias con herramientas como Claude o ChatGPT.</p></div>
-    <div class="idea-card"><div class="idea-icon">🎨</div><h4>Generación de contenido visual</h4><p>Midjourney, DALL-E, Canva IA. Qué se puede hacer y qué tiene valor real.</p></div>
-    <div class="idea-card"><div class="idea-icon">🔗</div><h4>Flujos de trabajo con IA</h4><p>Zapier + IA, Make, n8n. Conectar herramientas para crear procesos más eficientes.</p></div>
-    <div class="idea-card"><div class="idea-icon">🎯</div><h4>Personalización a escala</h4><p>Cómo la IA permite comunicación personalizada en campañas y servicios.</p></div>
-    <div class="idea-card"><div class="idea-icon">💡</div><h4>Identificar un nicho propio</h4><p>¿Qué combinación de IA + marketing + tu experiencia te hace única?</p></div>
-  </div>
-
-  <!-- RECOMENDACIONES IA -->
-  <div class="proj-recs-box proj-recs-ia" style="margin-top:16px">
-    <div class="proj-recs-label proj-recs-label-ia">✦ Consejos para esta exploración</div>
-    <div class="proj-rec-item"><div class="proj-rec-dot proj-rec-dot-ia"></div><p>No busques dominar todo. Elige cada semana una sola herramienta y úsala de verdad. La profundidad genera más aprendizaje que la amplitud.</p></div>
-    <div class="proj-rec-item"><div class="proj-rec-dot proj-rec-dot-ia"></div><p>Documenta lo que aprendes aunque sea en una nota breve. En 3 meses, ese registro será tu mayor activo: sabrás exactamente qué sabes hacer.</p></div>
-    <div class="proj-rec-item"><div class="proj-rec-dot proj-rec-dot-ia"></div><p>La pregunta que guía esta exploración no es "¿qué es la IA?" sino "¿qué puedo hacer yo con la IA que otros no pueden?"</p></div>
-    <div class="proj-rec-item"><div class="proj-rec-dot proj-rec-dot-ia"></div><p>Al final del mes 1, pregúntate: ¿qué aplicación me ha generado más energía? Esa es la dirección.</p></div>
-  </div>
-
-  <!-- LOG HISTORY IA -->
-  <div class="proj-section-divider"><span>Registro de sesiones · IA</span></div>
-  <div class="proj-log-history" id="iaLogHistory"></div>
-
-  <!-- EXPLORACIÓN 2: IMPACTO -->
-  <div class="proj-section-divider"><span>Segunda exploración</span></div>
-
-  <div class="proj-hero proj-hero-impact">
-    <span class="proj-tag proj-tag-impact">Exploración 2 · 3 meses</span>
-    <h2>Impacto en personas</h2>
-    <p>Mentorizar, escribir reflexiones, acompañar a otros. Explorar si hay algo en el contacto humano y el compartir experiencia que te llame de verdad.</p>
-    <div class="proj-meta">
-      <span class="proj-badge proj-badge-impact">⏱ 2–3h semanales</span>
-      <span class="proj-badge proj-badge-impact">🗓 12 semanas</span>
-      <span class="proj-badge proj-badge-impact" id="impactWeekBadge">Semana 1 de 12</span>
-    </div>
-  </div>
-
-  <!-- TIMELINE IMPACTO -->
-  <div class="card">
-    <div class="timeline-header">
-      <h3>Línea de progreso — Impacto</h3>
-      <span id="impactPct">0% completado</span>
-    </div>
-    <div class="timeline-track">
-      <div class="timeline-line"></div>
-      <div class="timeline-fill timeline-fill-impact" id="impactFill" style="width:0%"></div>
-      <div class="timeline-weeks" id="impactWeeks"></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;padding:0 20px;margin-top:6px">
-      <span style="font-size:11px;color:var(--warm-mid)">Mes 1</span>
-      <span style="font-size:11px;color:var(--warm-mid)">Mes 2</span>
-      <span style="font-size:11px;color:var(--warm-mid)">Mes 3</span>
-    </div>
-  </div>
-
-  <!-- SESIONES SEMANALES IMPACTO -->
-  <div class="week-sessions">
-    <h4>Sesiones esta semana — Impacto</h4>
-    <div id="impactSessionsList"></div>
-    <button class="log-entry-btn log-btn-impact" onclick="toggleLogForm('impact')">+ Registrar sesión</button>
-    <div class="log-form" id="logFormImpact">
-      <div class="journal-label">¿Qué exploraste hoy?</div>
-      <textarea id="logTextImpact" placeholder="Una conversación de mentoría, una reflexión que escribiste, una persona a la que acompañaste..."></textarea>
-      <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
-        <select id="logHoursImpact" style="padding:8px 12px;border-radius:20px;border:1px solid rgba(0,0,0,.1);font-family:'DM Sans',sans-serif;font-size:12px;background:white;outline:none;color:var(--warm-dark)">
-          <option value="1">1 hora</option><option value="1.5">1.5 horas</option>
-          <option value="2" selected>2 horas</option><option value="2.5">2.5 horas</option><option value="3">3 horas</option>
-        </select>
-        <button class="log-submit-btn log-submit-impact" onclick="submitLog('impact')">Guardar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- IDEAS IMPACTO -->
-  <div class="proj-section-divider"><span>Ideas para explorar · Impacto</span></div>
-  <div class="ideas-grid">
-    <div class="idea-card"><div class="idea-icon">✍️</div><h4>Escribir reflexiones semanales</h4><p>Una nota sobre algo que aprendiste esa semana. Sin publicar todavía. Solo escribir.</p></div>
-    <div class="idea-card"><div class="idea-icon">🗣️</div><h4>Mentoría informal</h4><p>Alguien en tu entorno que esté empezando en marketing o en un cambio de vida. Ofrécete.</p></div>
-    <div class="idea-card"><div class="idea-icon">📝</div><h4>Newsletter o blog personal</h4><p>Un espacio donde compartas lo que aprendes, aunque sea para 10 personas. La voz se entrena escribiendo.</p></div>
-    <div class="idea-card"><div class="idea-icon">🎙️</div><h4>Conversaciones con intención</h4><p>Una conversación profunda a la semana con alguien interesante. Escuchar también es impactar.</p></div>
-    <div class="idea-card"><div class="idea-icon">🌱</div><h4>Comunidad pequeña</h4><p>Un grupo reducido de personas con un interés común: pádel, naturaleza, marketing, IA. Curar, no gestionar.</p></div>
-    <div class="idea-card"><div class="idea-icon">🔁</div><h4>Combinar IA + impacto</h4><p>¿Y si lo que aprendes de IA lo enseñas a otros? Eso podría ser exactamente el proyecto.</p></div>
-  </div>
-
-  <!-- RECOMENDACIONES IMPACTO -->
-  <div class="proj-recs-box proj-recs-impact" style="margin-top:16px">
-    <div class="proj-recs-label proj-recs-label-impact">✦ Consejos para esta exploración</div>
-    <div class="proj-rec-item"><div class="proj-rec-dot proj-rec-dot-impact"></div><p>Empieza con lo más pequeño posible. No un curso, no una plataforma. Una conversación, un texto. El tamaño no importa, el inicio sí.</p></div>
-    <div class="proj-rec-item"><div class="proj-rec-dot proj-rec-dot-impact"></div><p>Presta atención a cómo te sientes después de cada sesión de impacto. ¿Energizada o vaciada? Esa respuesta vale más que cualquier análisis.</p></div>
-    <div class="proj-rec-item"><div class="proj-rec-dot proj-rec-dot-impact"></div><p>No necesitas ser experta para impactar. Necesitas ser honesta. La autenticidad conecta más que la autoridad.</p></div>
-    <div class="proj-rec-item"><div class="proj-rec-dot proj-rec-dot-impact"></div><p>Al final del mes 2, pregúntate: ¿hay algo en esta exploración que me haya sorprendido sobre mí misma? Esa sorpresa es una brújula.</p></div>
-  </div>
-
-  <!-- LOG HISTORY IMPACTO -->
-  <div class="proj-section-divider"><span>Registro de sesiones · Impacto</span></div>
-  <div class="proj-log-history" id="impactLogHistory"></div>
-
-  <!-- REFLEXIÓN FINAL -->
-  <div class="proj-section-divider"><span>Al final de los 3 meses</span></div>
-  <div style="background:var(--warm-dark);border-radius:20px;padding:28px;text-align:center">
-    <p style="font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;color:var(--cream);line-height:1.4;margin-bottom:14px">"¿Cuál de las dos me ha dado más energía,<br>más curiosidad, más ganas de continuar?"</p>
-    <p style="font-size:13px;color:rgba(247,244,238,.5);line-height:1.6">Esa respuesta — no el análisis, sino la sensación — es el inicio de tu proyecto personal.</p>
-  </div>
 </div>
+
+
 
 <!-- MI SEMANA -->
 <div id="semana" class="section">
@@ -899,8 +1448,10 @@
 <!-- MANTRAS -->
 <div id="mantras" class="section">
   <p class="section-intro">Frases para releer cuando el miedo sea más alto que la razón. No son afirmaciones vacías. Son verdades que ya conoces pero que el miedo te hace olvidar.</p>
-  <div class="mantra-card"><p>Él está eligiendo quedarse cada día. Eso no es un accidente.</p><span class="mantra-tag">Sobre la relación</span></div>
-  <div class="mantra-card" style="background:linear-gradient(135deg,#1A2A1A,#2C3A2C)"><p>Una relación que termina porque soy yo, no era una relación que debía continuar.</p><span class="mantra-tag">Sobre el miedo a perderle</span></div>
+  <div class="mantra-card" style="background:linear-gradient(135deg,#3A1A20,#2C1A28)"><p>El amor que mereces empieza por el que te das a ti misma. Todo lo demás es consecuencia.</p><span class="mantra-tag">Sobre el amor</span></div>
+  <div class="mantra-card" style="background:linear-gradient(135deg,#1A2A20,#253322)"><p>La alegría no tiene que ganarse ni justificarse. Y la esperanza no necesita certezas para existir — solo un pequeño paso hacia adelante.</p><span class="mantra-tag">Sobre la alegría y la esperanza</span></div>
+  <div class="mantra-card"><p>Confío en mí porque me he visto superar todo lo que creía que no podría. Esa es la única prueba que necesito.</p><span class="mantra-tag">Sobre la confianza en una misma</span></div>
+  <div class="mantra-card" style="background:linear-gradient(135deg,#1A2A1A,#2C3A2C)"><p>Mi valor no depende de que alguien lo reconozca. Existe aunque nadie lo nombre. Existe aunque yo lo olvide.</p><span class="mantra-tag">Sobre el valor propio</span></div>
   <div class="mantra-card" style="background:linear-gradient(135deg,#2A1F2A,#3A2C3A)"><p>El trabajo no es esconderme para que no se vaya. Es ser tan yo misma que quien se quede, se quede de verdad.</p><span class="mantra-tag">Sobre la autenticidad</span></div>
   <div class="mantra-card" style="background:linear-gradient(135deg,#1A2028,#252D38)"><p>La ansiedad vive en el futuro imaginado. Mi cuerpo siempre está en el presente.</p><span class="mantra-tag">Sobre el bucle mental</span></div>
   <div class="mantra-card" style="background:linear-gradient(135deg,#2A2015,#3A2E1A)"><p>Antes era peor y ahora lo identifico. Eso no es poco. Es la mitad del trabajo.</p><span class="mantra-tag">Sobre el progreso</span></div>
@@ -929,26 +1480,103 @@ function showToast(msg, ms=3500) {
 }
 
 // NAV
+let currentSection = 'morning';
 function showSection(id, btn) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  currentSection = id;
+
+  // Update bottom nav
+  document.querySelectorAll('.bn-item').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
+
+  // Update drawer active state
+  document.querySelectorAll('.md-item').forEach(b => b.classList.remove('active-section'));
+  const drawerBtn = document.querySelector(`.md-item[onclick*="'${id}'"]`);
+  if (drawerBtn) drawerBtn.classList.add('active-section');
+
   if (id === 'history') renderHistory('all');
   if (id === 'proyecto') initProyecto();
   if (id === 'semana') initSemana();
+  if (['morning','midday','night','spiral'].includes(id)) loadMomentNotes(id);
+  if (id === 'journal') loadJournalContext();
+}
+
+function navTo(id, btn) {
+  toggleMenu();
+  setTimeout(() => {
+    const bnBtn = document.querySelector(`.bn-item[onclick*="'${id}'"]`);
+    showSection(id, bnBtn || btn);
+  }, 200);
+}
+
+let menuOpen = false;
+function toggleMenu() {
+  menuOpen = !menuOpen;
+  document.getElementById('menuOverlay').classList.toggle('open', menuOpen);
+  document.getElementById('menuDrawer').classList.toggle('open', menuOpen);
+  document.getElementById('moreBtn').classList.toggle('active', menuOpen);
+}
+
+// DAILY CONTEXT PANEL
+function loadJournalContext() {
+  const today = new Date().toLocaleDateString('es-ES').replace(/\//g,'-');
+  const sections = {
+    morning: {
+      keys: ['morning_q1','morning_q2','morning_q3'],
+      ids: ['v1','v2','v3'],
+      rows: ['r1','r2','r3']
+    },
+    midday: {
+      keys: ['midday_q1','midday_q2','midday_q3'],
+      ids: ['v1','v2','v3'],
+      rows: ['r1','r2','r3']
+    },
+    night: {
+      keys: ['night_q1','night_q2','night_q3','night_q4'],
+      ids: ['v1','v2','v3','v4'],
+      rows: ['r1','r2','r3','r4']
+    }
+  };
+
+  Object.entries(sections).forEach(([sec, cfg]) => {
+    let data = {};
+    try { data = JSON.parse(localStorage.getItem('moment_' + sec + '_' + today) || '{}'); } catch {}
+    let hasAny = false;
+    cfg.keys.forEach((key, i) => {
+      const val = data[key] || '';
+      const rowEl = document.getElementById('ctx-' + sec + '-' + cfg.rows[i]);
+      const valEl = document.getElementById('ctx-' + sec + '-' + cfg.ids[i]);
+      if (val.trim() && rowEl && valEl) {
+        valEl.textContent = val.trim();
+        rowEl.style.display = 'block';
+        hasAny = true;
+      } else if (rowEl) {
+        rowEl.style.display = 'none';
+      }
+    });
+    const emptyEl = document.getElementById('ctx-' + sec + '-empty');
+    const subEl = document.getElementById('ctx-' + sec + '-sub');
+    if (emptyEl) emptyEl.style.display = hasAny ? 'none' : 'block';
+    if (subEl) subEl.textContent = hasAny ? 'Notas del día disponibles' : 'Sin notas registradas hoy';
+  });
 }
 
 // STATE
-let selectedScore = null, selectedMood = null;
+let selectedScore = null, selectedMoods = [];
 function selectScore(n) {
   selectedScore = n;
   document.querySelectorAll('.score-btn').forEach((b,i) => b.classList.toggle('selected', i < n));
 }
 function selectMood(btn) {
-  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  selectedMood = btn.textContent;
+  const mood = btn.textContent.trim();
+  if (selectedMoods.includes(mood)) {
+    selectedMoods = selectedMoods.filter(m => m !== mood);
+    btn.classList.remove('selected');
+  } else {
+    selectedMoods.push(mood);
+    btn.classList.add('selected');
+  }
 }
 
 // STORAGE
@@ -962,7 +1590,7 @@ async function saveEntry() {
   const spiral = document.getElementById('spiralInput').value.trim();
   const myThing = document.getElementById('myThing').value.trim();
 
-  if (!selectedScore && !up && !down && !spiral && !myThing && !selectedMood) {
+  if (!selectedScore && !up && !down && !spiral && !myThing && !selectedMoods.length) {
     showToast('Completa al menos un campo antes de guardar.'); return;
   }
 
@@ -975,7 +1603,7 @@ async function saveEntry() {
   box.scrollIntoView({ behavior:'smooth', block:'nearest' });
 
   let recs = [];
-  try { recs = await getAIRecs({ score:selectedScore, mood:selectedMood, up, down, spiral, myThing }); }
+  try { recs = await getAIRecs({ score:selectedScore, mood:selectedMoods.join(', '), up, down, spiral, myThing }); }
   catch { recs = getFallbackRecs(selectedScore, spiral); }
 
   document.getElementById('aiRecsContent').innerHTML = recs.map((r,i) => `
@@ -985,7 +1613,7 @@ async function saveEntry() {
     id: Date.now(),
     date: new Date().toLocaleDateString('es-ES'),
     dateISO: new Date().toISOString(),
-    score: selectedScore, mood: selectedMood,
+    score: selectedScore, mood: selectedMoods.join(', '),
     up, down, spiral, myThing, recs
   };
 
@@ -998,19 +1626,111 @@ async function saveEntry() {
   showToast('✓ Entrada guardada. Cada día que registras es un día que te conoces mejor.');
 }
 
+function toggleCtx(sec) {
+  const body = document.getElementById('ctx-' + sec + '-body');
+  const chev = document.getElementById('ctx-' + sec + '-chev');
+  if (!body) return;
+  const isOpen = body.classList.toggle('open');
+  if (chev) chev.classList.toggle('open', isOpen);
+}
+function getMomentKey(prefix) {
+  return prefix + '_' + new Date().toLocaleDateString('es-ES').replace(/\//g,'-');
+}
+
+function autosaveMoment(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const prefix = id.split('_')[0] + '_' + id.split('_')[1];
+  const key = 'moment_' + id + '_' + new Date().toLocaleDateString('es-ES').replace(/\//g,'-');
+  localStorage.setItem(key, el.value);
+}
+
+function saveMomentNotes(section) {
+  const ids = {
+    morning: ['morning_q1','morning_q2','morning_q3'],
+    midday:  ['midday_q1','midday_q2','midday_q3'],
+    night:   ['night_q1','night_q2','night_q3','night_q4'],
+    spiral:  ['spiral_hecho','spiral_historia','spiral_salida']
+  };
+  const today = new Date().toLocaleDateString('es-ES').replace(/\//g,'-');
+  const data = {};
+  (ids[section]||[]).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) data[id] = el.value;
+  });
+  localStorage.setItem('moment_' + section + '_' + today, JSON.stringify(data));
+  const ts = document.getElementById(section + '_ts');
+  if (ts) {
+    ts.textContent = 'Guardado a las ' + new Date().toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'});
+  }
+  if (currentSection === 'journal') loadJournalContext();
+  showToast('✓ Notas guardadas.');
+}
+
+function loadMomentNotes(section) {
+  const ids = {
+    morning: ['morning_q1','morning_q2','morning_q3'],
+    midday:  ['midday_q1','midday_q2','midday_q3'],
+    night:   ['night_q1','night_q2','night_q3','night_q4'],
+    spiral:  ['spiral_hecho','spiral_historia','spiral_salida']
+  };
+  const today = new Date().toLocaleDateString('es-ES').replace(/\//g,'-');
+  try {
+    const raw = localStorage.getItem('moment_' + section + '_' + today);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    (ids[section]||[]).forEach(id => {
+      const el = document.getElementById(id);
+      if (el && data[id]) el.value = data[id];
+    });
+  } catch {}
+}
+
+function getTodayMomentNotes() {
+  const today = new Date().toLocaleDateString('es-ES').replace(/\//g,'-');
+  const sections = ['morning','midday','night','spiral'];
+  const result = {};
+  sections.forEach(s => {
+    try {
+      const raw = localStorage.getItem('moment_' + s + '_' + today);
+      if (raw) result[s] = JSON.parse(raw);
+    } catch {}
+  });
+  return result;
+}
+
 // CLAUDE API
 async function getAIRecs(data) {
-  const prompt = `Eres un coach emocional experto en apego ansioso y desarrollo personal. Una mujer de 44 años, introvertida y perfeccionista, está trabajando su patrón de apego ansioso en una relación nueva con un hombre de 51 años con 2 hijos. Lleva un diario diario para gestionar sus emociones y pensamientos intrusivos.
+  const moments = getTodayMomentNotes();
+  const morningCtx = moments.morning ? [
+    moments.morning.morning_q1 ? `Cómo empezó la mañana: "${moments.morning.morning_q1}"` : '',
+    moments.morning.morning_q2 ? `Anclajes de la mañana: "${moments.morning.morning_q2}"` : '',
+    moments.morning.morning_q3 ? `Pensamiento que vaciló a la mañana: "${moments.morning.morning_q3}"` : ''
+  ].filter(Boolean).join(' / ') : '';
+  const middayCtx = moments.midday ? [
+    moments.midday.midday_q1 ? `Estado al mediodía: "${moments.midday.midday_q1}"` : '',
+    moments.midday.midday_q3 ? `Acción elegida al mediodía: "${moments.midday.midday_q3}"` : ''
+  ].filter(Boolean).join(' / ') : '';
+  const spiralCtx = moments.spiral ? [
+    moments.spiral.spiral_hecho ? `Hecho que detonó espiral: "${moments.spiral.spiral_hecho}"` : '',
+    moments.spiral.spiral_historia ? `Historia que se contó: "${moments.spiral.spiral_historia}"` : '',
+    moments.spiral.spiral_salida ? `Cómo salió de la espiral: "${moments.spiral.spiral_salida}"` : ''
+  ].filter(Boolean).join(' / ') : '';
 
-Datos del día de hoy:
+  const prompt = `Eres un coach emocional experto en apego ansioso y desarrollo personal. Una mujer de 44 años, introvertida y perfeccionista, está trabajando su patrón de apego ansioso en una relación nueva (4 meses) con un hombre de 51 años con 2 hijos. Usa este sistema de registro diario para conocerse mejor.
+
+DATOS COMPLETOS DE HOY:
 - Estado del día (1-10): ${data.score || 'no indicado'}
-- Emoción del día: ${data.mood || 'no indicada'}
+- Emoción principal: ${data.mood || 'no indicada'}
 - Lo que subió su ánimo: ${data.up || 'no indicado'}
-- Lo que lo bajó: ${data.down || 'no indicado'}
-- ¿Hubo espiral de pensamientos?: ${data.spiral || 'no indicado'}
+- Lo que bajó su ánimo: ${data.down || 'no indicado'}
+- Espiral de pensamientos: ${data.spiral || 'no indicado'}
 - Avance en algo propio: ${data.myThing || 'no indicado'}
+${morningCtx ? `- Notas de la mañana: ${morningCtx}` : ''}
+${middayCtx ? `- Notas del mediodía: ${middayCtx}` : ''}
+${spiralCtx ? `- Registro de espiral del día: ${spiralCtx}` : ''}
 
-Basándote en estos datos específicos, genera EXACTAMENTE 3 recomendaciones personalizadas, concretas y empáticas para esta noche y para mañana. Cada recomendación debe ser en segunda persona (háblale directamente a ella), íntima, directa y breve (2-3 líneas máximo). Deben ser accionables y específicas. Responde ÚNICAMENTE con JSON válido sin texto adicional ni backticks:
+INSTRUCCIÓN: Basándote EXCLUSIVAMENTE en los datos específicos de hoy que se indican arriba, genera 3 recomendaciones personalizadas. Si hay información de la mañana, mediodía o espiral, úsala directamente en las recomendaciones (menciona lo concreto). Cada recomendación: en segunda persona, directa, empática, 2-3 líneas, accionable para esta noche o mañana. Responde ÚNICAMENTE con JSON sin texto adicional ni backticks:
 {"recs":["recomendación 1","recomendación 2","recomendación 3"]}`;
 
   const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -1233,7 +1953,7 @@ function scheduleNotifications() {
       const target=getMin(n.id);
       if (target===null||nowMin!==target) return;
       const notif = new Notification(n.title, { body:n.body, icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><text y="28" font-size="28">🌿</text></svg>' });
-      notif.onclick = () => { window.focus(); showSection(n.section, document.querySelectorAll('.nav-tab')[['morning','midday','night','spiral','journal','history','proyecto','mantras'].indexOf(n.section)]); };
+      notif.onclick = () => { window.focus(); showSection(n.section, document.querySelector(`.bn-item[onclick*="'${n.section}'"]`)); };
     });
   }, 5000);
   localStorage.setItem('notif_times', JSON.stringify({t1:document.getElementById('t1').value,t2:document.getElementById('t2').value,t3:document.getElementById('t3').value}));
@@ -1475,7 +2195,7 @@ function renderAnalysisContent(analysis) {
   if (!analysis) return;
   const html = `
     <div class="wr-section-title">Esta semana en resumen</div>
-    <p style="font-size:13.5px;color:rgba(247,244,238,.82);line-height:1.65;font-family:'Cormorant Garamond',serif;font-style:italic">${analysis.resumen}</p>
+    <p style="font-size:14px;color:rgba(247,244,238,.9);line-height:1.7;font-family:'Inter','DM Sans',sans-serif;font-weight:300">${analysis.resumen}</p>
     <div class="wr-section-title">✓ Lo que has conseguido</div>
     ${(analysis.logros||[]).map(r=>`<div class="wr-rec-item"><div class="wr-rec-bullet" style="background:#8A9E85"></div><p>${r}</p></div>`).join('')}
     <div class="wr-section-title">🔍 Patrones que observo</div>
@@ -1568,7 +2288,7 @@ function renderWrHistory() {
       <div class="wr-he-preview">${preview}</div>
       <div class="wr-he-detail" id="wrd${i}">
         <div style="font-size:12px;color:var(--warm-mid);margin-bottom:10px">${w.days} días registrados · Guardado el ${new Date(w.savedAt).toLocaleDateString('es-ES')}</div>
-        ${w.analysis?.resumen ? `<div style="font-size:13.5px;color:var(--warm-dark);line-height:1.6;font-family:'Cormorant Garamond',serif;font-style:italic;margin-bottom:10px">${w.analysis.resumen}</div>` : ''}
+        ${w.analysis?.resumen ? `<div style="font-size:13.5px;color:var(--warm-dark);line-height:1.7;font-family:'Inter','DM Sans',sans-serif;font-weight:400;margin-bottom:10px">${w.analysis.resumen}</div>` : ''}
         ${recsHtml ? `<div class="wr-he-analysis"><div class="wa-label">Recomendaciones de esa semana</div>${recsHtml}</div>` : ''}
       </div>
     </div>`;
@@ -1580,142 +2300,518 @@ function toggleWrDetail(id) { const el = document.getElementById(id); if (el) el
 // ─── PROYECTO ───
 const TOTAL_WEEKS = 12;
 
-function getProjData() { try { return JSON.parse(localStorage.getItem('proyecto_v1')||'{}'); } catch { return {}; } }
-function saveProjData(d) { localStorage.setItem('proyecto_v1', JSON.stringify(d)); }
+// ═══ PROYECTO — NUEVO MÓDULO ═══
+function getProjData() { try { return JSON.parse(localStorage.getItem('proyecto_v2')||'{}'); } catch { return {}; } }
+function saveProjData(d) { localStorage.setItem('proyecto_v2', JSON.stringify(d)); }
 
 function initProyecto() {
-  renderTimeline('ia');
-  renderTimeline('impact');
-  renderProjSessions('ia');
-  renderProjSessions('impact');
-  renderProjLogs('ia');
-  renderProjLogs('impact');
-  updateProjStats();
+  renderPhase1Projects();
+  renderPhase2Projects();
+  renderPhase3Evals();
+  loadInsightNotes();
+  updateDashboardAuto();
+  initEvolutions();
 }
 
-function renderTimeline(type) {
-  const data = getProjData();
-  const completedWeeks = (data[type+'_weeks'] || []);
-  const weeksEl = document.getElementById(type==='ia'?'iaWeeks':'impactWeeks');
-  const fillEl = document.getElementById(type==='ia'?'iaFill':'impactFill');
-  const pctEl = document.getElementById(type==='ia'?'iaPct':'impactPct');
-  const badgeEl = document.getElementById(type==='ia'?'iaWeekBadge':'impactWeekBadge');
-  const currentWeek = Math.min(completedWeeks.length + 1, TOTAL_WEEKS);
-  const pct = Math.round((completedWeeks.length / TOTAL_WEEKS) * 100);
-  pctEl.textContent = pct + '% completado';
-  fillEl.style.width = pct + '%';
-  badgeEl.textContent = 'Semana ' + currentWeek + ' de ' + TOTAL_WEEKS;
-  weeksEl.innerHTML = Array.from({length: TOTAL_WEEKS}, (_, i) => {
-    const w = i + 1;
-    const done = completedWeeks.includes(w);
-    const isCurrent = w === currentWeek && !done;
-    const doneClass = done ? (type==='ia'?'done-ia':'done-impact') : '';
-    const curClass = isCurrent ? (type==='ia'?'current':'current-impact') : '';
-    return `<div class="week-dot-wrap" title="Semana ${w}">
-      <div class="week-dot ${doneClass} ${curClass}" onclick="toggleWeek('${type}',${w})">${done?'✓':w}</div>
-      <div class="week-label">${[1,4,8,12].includes(w)?'S'+w:''}</div>
-    </div>`;
-  }).join('');
+function switchPhase(n, btn) {
+  document.querySelectorAll('.phase-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.phase-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('phase' + n).classList.add('active');
 }
 
-function toggleWeek(type, week) {
+// ── PHASE 1 ──
+const EXAMPLE_PROJECTS = {
+  investigar: { name:'Investigar y explicar un tema complejo', hypothesis:'"Disfruto aprendiendo y explicando temas complejos."', duration:'14', actions:'Investigar 3 temas que me interesen\nEscribir un resumen de cada uno\nExplicarlo a alguien o publicarlo en LinkedIn', indicators:'Motivación al empezar\nDisfrute durante la investigación\nFeedback recibido' },
+  crear: { name:'Crear algo tangible', hypothesis:'"Me siento realizada cuando creo algo concreto."', duration:'14', actions:'Escribir, diseñar o crear una guía\nDesarrollar una idea con IA\nCompartir el resultado con alguien', indicators:'Energía durante el proceso\nSatisfacción al terminar\nGanas de repetirlo' },
+  ayudar: { name:'Ayudar a alguien', hypothesis:'"Mi propósito puede estar en ayudar a otros."', duration:'14', actions:'Asesorar a alguien de mi entorno\nResolver un problema real con alguien\nMentoring informal una vez por semana', indicators:'Cómo me siento después de cada sesión\nImpacto percibido\nGanas de continuar' }
+};
+
+function prefillProject(key) {
+  const p = EXAMPLE_PROJECTS[key];
+  if (!p) return;
+  document.getElementById('pmName').value = p.name;
+  document.getElementById('pmHypothesis').value = p.hypothesis;
+  document.getElementById('pmDuration').value = p.duration;
+  document.getElementById('pmActions').value = p.actions;
+  document.getElementById('pmIndicators').value = p.indicators;
+  document.getElementById('pmStartDate').value = new Date().toISOString().split('T')[0];
+}
+
+function openAddProject() {
+  document.getElementById('pmName').value = '';
+  document.getElementById('pmHypothesis').value = '';
+  document.getElementById('pmDuration').value = '14';
+  document.getElementById('pmActions').value = '';
+  document.getElementById('pmIndicators').value = '';
+  document.getElementById('pmStartDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('projModalOverlay').classList.add('open');
+  document.getElementById('projModal').classList.add('open');
+}
+
+function closeProjModal() {
+  document.getElementById('projModalOverlay').classList.remove('open');
+  document.getElementById('projModal').classList.remove('open');
+}
+
+function saveNewProject() {
+  const name = document.getElementById('pmName').value.trim();
+  if (!name) { showToast('Ponle un nombre al proyecto.'); return; }
   const data = getProjData();
-  const key = type + '_weeks';
-  let weeks = data[key] || [];
-  if (weeks.includes(week)) weeks = weeks.filter(w => w !== week);
-  else weeks.push(week);
-  data[key] = weeks;
+  if (!data.phase1) data.phase1 = [];
+  data.phase1.push({
+    id: Date.now(),
+    name,
+    hypothesis: document.getElementById('pmHypothesis').value.trim(),
+    duration: document.getElementById('pmDuration').value,
+    actions: document.getElementById('pmActions').value.trim(),
+    indicators: document.getElementById('pmIndicators').value.trim(),
+    startDate: document.getElementById('pmStartDate').value,
+    energia: null, impacto: null, fluidez: null
+  });
   saveProjData(data);
-  renderTimeline(type);
-  updateProjStats();
-  showToast(weeks.includes(week) ? '✓ Semana marcada como completada' : 'Semana desmarcada');
+  closeProjModal();
+  renderPhase1Projects();
+  renderPhase3Evals();
+  showToast('✓ Proyecto añadido.');
 }
 
-function renderProjSessions(type) {
-  const sessions = type === 'ia' ? [
-    { title: 'Sesión de exploración', desc: 'Prueba una herramienta nueva o profundiza en una conocida', hours: '2h' },
-    { title: 'Documentar aprendizaje', desc: 'Escribe qué aprendiste y qué podrías hacer con ello', hours: '1h' }
-  ] : [
-    { title: 'Sesión de impacto', desc: 'Una conversación, mentoría informal o texto escrito', hours: '2h' },
-    { title: 'Reflexión de la semana', desc: '¿Cómo te sentiste? ¿Qué te sorprendió? ¿Quieres más?', hours: '1h' }
-  ];
+function renderPhase1Projects() {
   const data = getProjData();
-  const checked = data[type + '_sessions_' + getWeekKey()] || [];
-  const colorClass = type === 'ia' ? 'ia' : 'impact';
-  document.getElementById(type + 'SessionsList').innerHTML = sessions.map((s, i) => {
-    const isChecked = checked.includes(i);
-    return `<div class="session-row">
-      <div class="session-check ${isChecked ? 'checked-' + colorClass : ''}" onclick="toggleSession('${type}',${i})">${isChecked ? '✓' : ''}</div>
-      <div class="session-info"><div class="session-title">${s.title}</div><div class="session-desc">${s.desc}</div></div>
-      <span class="session-hours session-hours-${colorClass}">${s.hours}</span>
-    </div>`;
-  }).join('');
+  const list = data.phase1 || [];
+  const el = document.getElementById('phase1ProjectsList');
+  if (!list.length) { el.innerHTML = ''; return; }
+  el.innerHTML = list.map((p, i) => `
+    <div class="proj-card">
+      <div class="proj-card-header" onclick="toggleProjCard('p1_${i}')">
+        <div><div class="proj-card-title">${p.name}</div>${p.hypothesis ? `<div class="proj-card-hyp">${p.hypothesis}</div>` : ''}</div>
+        <div class="proj-card-meta"><span class="proj-dur-badge">📅 ${p.duration}d</span><span style="font-size:12px;color:var(--warm-mid)">▼</span></div>
+      </div>
+      <div class="proj-card-body" id="p1_${i}">
+        ${p.startDate ? `<div class="proj-field-row"><div class="proj-field-label">Inicio</div><div class="proj-field-val">${formatDate(p.startDate)}</div></div>` : ''}
+        ${p.actions ? `<div class="proj-field-row"><div class="proj-field-label">Acciones</div><div class="proj-field-val">${p.actions}</div></div>` : ''}
+        ${p.indicators ? `<div class="proj-field-row"><div class="proj-field-label">Indicadores</div><div class="proj-field-val">${p.indicators}</div></div>` : ''}
+        <div class="energy-meter">
+          <div class="energy-meter-title">Evaluación (1–10)</div>
+          <div class="energy-row"><span class="energy-label">⚡ Energía</span><div class="energy-scale">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="e-dot ${p.energia>=n?'sel-energia':''}" onclick="setMetric(${i},'energia',${n})">${n}</div>`).join('')}</div><span class="energy-val">${p.energia||'—'}</span></div>
+          <div class="energy-row"><span class="energy-label">🎯 Impacto</span><div class="energy-scale">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="e-dot ${p.impacto>=n?'sel-impacto':''}" onclick="setMetric(${i},'impacto',${n})">${n}</div>`).join('')}</div><span class="energy-val">${p.impacto||'—'}</span></div>
+          <div class="energy-row"><span class="energy-label">🌊 Fluidez</span><div class="energy-scale">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="e-dot ${p.fluidez>=n?'sel-fluidez':''}" onclick="setMetric(${i},'fluidez',${n})">${n}</div>`).join('')}</div><span class="energy-val">${p.fluidez||'—'}</span></div>
+        </div>
+        <button onclick="deletePhase1Project(${i})" style="margin-top:12px;font-size:11px;color:var(--terracotta);background:none;border:1px solid rgba(196,133,90,.25);border-radius:20px;padding:4px 12px;cursor:pointer">Eliminar proyecto</button>
+      </div>
+    </div>`).join('');
 }
 
-function toggleSession(type, idx) {
+function toggleProjCard(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('open');
+}
+
+function setMetric(idx, key, val) {
   const data = getProjData();
-  const key = type + '_sessions_' + getWeekKey();
-  let checked = data[key] || [];
-  if (checked.includes(idx)) checked = checked.filter(i => i !== idx);
-  else checked.push(idx);
-  data[key] = checked;
+  if (!data.phase1 || !data.phase1[idx]) return;
+  data.phase1[idx][key] = data.phase1[idx][key] === val ? null : val;
   saveProjData(data);
-  renderProjSessions(type);
+  renderPhase1Projects();
+  updateDashboardAuto();
+}
+
+function deletePhase1Project(idx) {
+  const data = getProjData();
+  data.phase1.splice(idx, 1);
+  saveProjData(data);
+  renderPhase1Projects();
+  renderPhase3Evals();
+}
+
+// ── PHASE 2 ──
+function openAddPhase2Project() {
+  document.getElementById('pm2Name').value = '';
+  document.getElementById('pm2Goal').value = '';
+  document.getElementById('pm2Problem').value = '';
+  document.getElementById('pm2Audience').value = '';
+  document.getElementById('pm2Result').value = '';
+  document.getElementById('pm2Actions').value = '';
+  document.getElementById('proj2ModalOverlay').classList.add('open');
+  document.getElementById('proj2Modal').classList.add('open');
+}
+
+function closeProj2Modal() {
+  document.getElementById('proj2ModalOverlay').classList.remove('open');
+  document.getElementById('proj2Modal').classList.remove('open');
+}
+
+function savePhase2Project() {
+  const name = document.getElementById('pm2Name').value.trim();
+  if (!name) { showToast('Ponle un nombre al proyecto.'); return; }
+  const data = getProjData();
+  if (!data.phase2) data.phase2 = [];
+  if (data.phase2.length >= 2) { showToast('Fase 2 permite máximo 2 proyectos.'); return; }
+  data.phase2.push({ id: Date.now(), name, goal: document.getElementById('pm2Goal').value.trim(), problem: document.getElementById('pm2Problem').value.trim(), audience: document.getElementById('pm2Audience').value.trim(), result: document.getElementById('pm2Result').value.trim(), actions: document.getElementById('pm2Actions').value.trim() });
+  saveProjData(data);
+  closeProj2Modal();
+  renderPhase2Projects();
+  showToast('✓ Proyecto ampliado guardado.');
+}
+
+function renderPhase2Projects() {
+  const data = getProjData();
+  const list = data.phase2 || [];
+  const el = document.getElementById('phase2ProjectsList');
+  if (!list.length) { el.innerHTML = ''; return; }
+  el.innerHTML = list.map((p, i) => `
+    <div class="proj-card">
+      <div class="proj-card-header" onclick="toggleProjCard('p2_${i}')">
+        <div><div class="proj-card-title">${p.name}</div></div>
+        <span style="font-size:12px;color:var(--warm-mid)">▼</span>
+      </div>
+      <div class="proj-card-body" id="p2_${i}">
+        ${p.goal ? `<div class="proj-field-row"><div class="proj-field-label">Objetivo</div><div class="proj-field-val">${p.goal}</div></div>` : ''}
+        ${p.problem ? `<div class="proj-field-row"><div class="proj-field-label">Problema que resuelve</div><div class="proj-field-val">${p.problem}</div></div>` : ''}
+        ${p.audience ? `<div class="proj-field-row"><div class="proj-field-label">A quién ayuda</div><div class="proj-field-val">${p.audience}</div></div>` : ''}
+        ${p.result ? `<div class="proj-field-row"><div class="proj-field-label">Resultado tangible</div><div class="proj-field-val">${p.result}</div></div>` : ''}
+        ${p.actions ? `<div class="proj-field-row"><div class="proj-field-label">Acciones</div><div class="proj-field-val">${p.actions}</div></div>` : ''}
+        <button onclick="deletePhase2Project(${i})" style="margin-top:12px;font-size:11px;color:var(--terracotta);background:none;border:1px solid rgba(196,133,90,.25);border-radius:20px;padding:4px 12px;cursor:pointer">Eliminar</button>
+      </div>
+    </div>`).join('');
+}
+
+function deletePhase2Project(idx) {
+  const data = getProjData();
+  data.phase2.splice(idx, 1);
+  saveProjData(data);
+  renderPhase2Projects();
+}
+
+// ── PHASE 3 ──
+function renderPhase3Evals() {
+  const data = getProjData();
+  const all = [...(data.phase1||[]), ...(data.phase2||[])];
+  const el = document.getElementById('phase3EvalList');
+  if (!all.length) { el.innerHTML = '<p style="font-size:13px;color:var(--warm-mid);font-style:italic;text-align:center;padding:20px">Añade proyectos en la Fase 1 para evaluarlos aquí.</p>'; return; }
+  el.innerHTML = all.map((p, i) => `
+    <div class="proj-card" style="margin-bottom:10px">
+      <div style="padding:14px 16px">
+        <div class="proj-card-title" style="margin-bottom:10px">${p.name}</div>
+        <div class="energy-row"><span class="energy-label">⚡ Energía</span><div class="energy-scale">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="e-dot ${p.energia>=n?'sel-energia':''}" onclick="setAllMetric(${i},'energia',${n})">${n}</div>`).join('')}</div><span class="energy-val">${p.energia||'—'}</span></div>
+        <div class="energy-row"><span class="energy-label">🎯 Impacto</span><div class="energy-scale">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="e-dot ${p.impacto>=n?'sel-impacto':''}" onclick="setAllMetric(${i},'impacto',${n})">${n}</div>`).join('')}</div><span class="energy-val">${p.impacto||'—'}</span></div>
+        <div class="energy-row"><span class="energy-label">🌊 Fluidez</span><div class="energy-scale">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="e-dot ${p.fluidez>=n?'sel-fluidez':''}" onclick="setAllMetric(${i},'fluidez',${n})">${n}</div>`).join('')}</div><span class="energy-val">${p.fluidez||'—'}</span></div>
+      </div>
+    </div>`).join('');
+}
+
+function setAllMetric(idx, key, val) {
+  const data = getProjData();
+  const p1 = data.phase1 || [];
+  const p2 = data.phase2 || [];
+  const all = [...p1, ...p2];
+  if (!all[idx]) return;
+  const isP1 = idx < p1.length;
+  const realIdx = isP1 ? idx : idx - p1.length;
+  const target = isP1 ? data.phase1 : data.phase2;
+  target[realIdx][key] = target[realIdx][key] === val ? null : val;
+  saveProjData(data);
+  renderPhase3Evals();
+  renderPhase1Projects();
+  updateDashboardAuto();
+}
+
+function updateDashboardAuto() {
+  const data = getProjData();
+  const all = [...(data.phase1||[]), ...(data.phase2||[])];
+  const withMetrics = all.filter(p => p.energia || p.impacto || p.fluidez);
+  if (!withMetrics.length) return;
+  const topEnergy = [...withMetrics].sort((a,b)=>(b.energia||0)-(a.energia||0)).slice(0,2).map(p=>p.name);
+  const topImpact = [...withMetrics].sort((a,b)=>(b.impacto||0)-(a.impacto||0)).slice(0,2).map(p=>p.name);
+  const topFlow = [...withMetrics].sort((a,b)=>(b.fluidez||0)-(a.fluidez||0)).slice(0,2).map(p=>p.name);
+  document.getElementById('insEnergy').textContent = topEnergy.join(', ') || '—';
+  document.getElementById('insImpact').textContent = topImpact.join(', ') || '—';
+  document.getElementById('insSkills').textContent = topFlow.join(', ') || '—';
+  const avg = p => ((p.energia||0) + (p.impacto||0) + (p.fluidez||0)) / 3;
+  const best = [...withMetrics].sort((a,b)=>avg(b)-avg(a)).slice(0,1)[0];
+  document.getElementById('insEnv').textContent = best ? best.name : '—';
+}
+
+function loadInsightNotes() {
+  const data = getProjData();
+  const notes = data.insight_notes || {};
+  ['energy','impact','skills','env'].forEach(k => {
+    const el = document.getElementById('ins_' + k + '_notes');
+    if (el && notes[k]) el.value = notes[k];
+  });
+}
+
+function saveInsightNotes() {
+  const data = getProjData();
+  data.insight_notes = {
+    energy: document.getElementById('ins_energy_notes').value,
+    impact: document.getElementById('ins_impact_notes').value,
+    skills: document.getElementById('ins_skills_notes').value,
+    env: document.getElementById('ins_env_notes').value
+  };
+  saveProjData(data);
+}
+
+async function generateDashboard() {
+  const data = getProjData();
+  const all = [...(data.phase1||[]), ...(data.phase2||[])];
+  const notes = data.insight_notes || {};
+  const box = document.getElementById('dashboardContent');
+  box.innerHTML = '<div class="ai-loading"><div class="spinner"></div><br>Analizando tus proyectos...</div>';
+
+  const projSummary = all.map(p => `- ${p.name}: energía ${p.energia||'?'}/10, impacto ${p.impacto||'?'}/10, fluidez ${p.fluidez||'?'}/10`).join('\n');
+  const prompt = `Eres un coach de propósito personal. Una mujer de 44 años ha completado proyectos experimentales de 2-4 semanas para descubrir qué le da energía y propósito.
+
+Proyectos y métricas (1-10):
+${projSummary || 'Sin datos todavía.'}
+
+Sus reflexiones:
+- Actividades con más energía: ${notes.energy || 'no indicado'}
+- Tipo de impacto generado: ${notes.impact || 'no indicado'}  
+- Habilidades más usadas: ${notes.skills || 'no indicado'}
+- Entornos donde se siente más útil: ${notes.env || 'no indicado'}
+
+Genera un análisis breve de propósito con estas 3 secciones exactas:
+1. Tu propósito puede estar relacionado con (2-3 líneas)
+2. Patrones que se repiten (lista de 3-4 ítems concisos)
+3. Próximo paso concreto recomendado (1 acción específica)
+
+Responde SOLO en JSON sin backticks:
+{"proposito":"...","patrones":["...","...","..."],"siguiente":"..."}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:600, messages:[{role:'user',content:prompt}] })
+    });
+    const result = await res.json();
+    const text = result.content.map(c=>c.text||'').join('').replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(text);
+    box.innerHTML = `
+      <p style="font-size:14px;color:rgba(247,244,238,.9);line-height:1.7;font-family:'Inter','DM Sans',sans-serif;font-weight:300;margin-bottom:14px">${parsed.proposito}</p>
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:rgba(247,244,238,.4);margin-bottom:8px">Patrones detectados</div>
+      ${parsed.patrones.map(p=>`<div style="display:flex;gap:8px;margin-bottom:8px"><span style="color:var(--gold);flex-shrink:0">→</span><span style="font-size:13.5px;color:rgba(247,244,238,.82);line-height:1.6;font-family:'Inter','DM Sans',sans-serif;font-weight:300">${p}</span></div>`).join('')}
+      <div style="margin-top:14px;padding:12px 14px;background:rgba(201,169,110,.1);border-radius:10px;border:1px solid rgba(201,169,110,.2)">
+        <div style="font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:5px">Siguiente paso</div>
+        <p style="font-size:13.5px;color:rgba(247,244,238,.85);line-height:1.6;font-family:'Inter','DM Sans',sans-serif;font-weight:300">${parsed.siguiente}</p>
+      </div>`;
+  } catch {
+    box.innerHTML = '<p style="font-size:13px;color:rgba(247,244,238,.5)">No se pudo generar el análisis. Revisa tu conexión.</p>';
+  }
+}
+
+function formatDate(d) {
+  if (!d) return '';
+  const dt = new Date(d + 'T12:00:00');
+  return dt.toLocaleDateString('es-ES', { day:'numeric', month:'long', year:'numeric' });
+}
+
+// ══ TRACKING SYSTEM ══
+function getTodayKey() { return new Date().toLocaleDateString('es-ES').replace(/\//g,'-'); }
+function getWeekKeyProj() { return 'w' + getWeekKey(); }
+
+function toggleTrack(id) {
+  const body = document.getElementById(id);
+  const chev = document.getElementById(id + '_chev');
+  if (!body) return;
+  const open = body.classList.toggle('open');
+  if (chev) chev.classList.toggle('open', open);
+  if (open) loadTrackingState(id.replace('daily','').replace('weekly',''), id.includes('daily') ? 'daily' : 'weekly');
+}
+
+// State for current daily/weekly form
+const _tq = {};
+const _wq = {};
+
+function setTQ(phase, key, val, btn) {
+  if (!_tq[phase]) _tq[phase] = {};
+  _tq[phase][key] = val;
+  if (!btn) return;
+  const parent = btn.parentElement;
+  if (!parent) return;
+  // clear all siblings of same type
+  parent.querySelectorAll('.tq-opt, .tqs-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function setWQ(phase, key, val, btn) {
+  if (!_wq[phase]) _wq[phase] = {};
+  _wq[phase][key] = val;
+  if (btn && btn.parentElement) {
+    btn.parentElement.querySelectorAll('.tq-opt').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+}
+
+function autoSaveTQ(phase, key, val) {
+  if (!_tq[phase]) _tq[phase] = {};
+  _tq[phase][key] = val;
+}
+
+function autoSaveWQ(phase, key, val) {
+  if (!_wq[phase]) _wq[phase] = {};
+  _wq[phase][key] = val;
+}
+
+function saveDailyTracking(phase) {
+  const data = getProjData();
+  if (!data.tracking) data.tracking = {};
+  if (!data.tracking[phase]) data.tracking[phase] = {};
+  if (!data.tracking[phase].daily) data.tracking[phase].daily = {};
+  const dayKey = getTodayKey();
+  data.tracking[phase].daily[dayKey] = { ..._tq[phase], savedAt: new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}) };
+  saveProjData(data);
+  renderEvolution(phase);
+  showToast('✓ Check-in guardado.');
+}
+
+function saveWeeklyTracking(phase) {
+  const data = getProjData();
+  if (!data.tracking) data.tracking = {};
+  if (!data.tracking[phase]) data.tracking[phase] = {};
+  if (!data.tracking[phase].weekly) data.tracking[phase].weekly = {};
+  const wk = getWeekKeyProj();
+  data.tracking[phase].weekly[wk] = { ..._wq[phase], savedAt: new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}) };
+  saveProjData(data);
+  showToast('✓ Revisión semanal guardada.');
+}
+
+function loadTrackingState(phase, type) {
+  const data = getProjData();
+  const tracking = data.tracking?.[phase] || {};
+  if (type === 'daily') {
+    const day = tracking.daily?.[getTodayKey()] || {};
+    if (!_tq[phase]) _tq[phase] = { ...day };
+    // restore UI
+    const fields = { worked: `${phase}_worked`, energy_daily: `${phase}_energy_daily`, interaction: `${phase}_interaction`, progress: `${phase}_progress`, skill: `${phase}_skill`, iam: `${phase}_iam` };
+    Object.entries(fields).forEach(([key, elId]) => {
+      const val = day[key];
+      if (!val) return;
+      const container = document.getElementById(elId);
+      if (!container) return;
+      container.querySelectorAll('.tq-opt').forEach(b => { if (b.textContent.toLowerCase().includes(val.toLowerCase()) || b.getAttribute('onclick')?.includes(val)) b.classList.add('selected'); });
+    });
+    ['what','flow'].forEach(k => { const el = document.getElementById(`${phase}_${k}`); if (el && day[k]) el.value = day[k]; });
+    ['minutes'].forEach(k => { const el = document.getElementById(`${phase}_${k}`); if (el && day[k]) el.value = day[k]; });
+    const score = day.score_daily;
+    if (score) { const sc = document.getElementById(`${phase}_score_daily`); if (sc) { sc.querySelectorAll('.tqs-btn').forEach((b,i) => b.classList.toggle('selected', i+1 === score)); } }
+  } else {
+    const wk = tracking.weekly?.[getWeekKeyProj()] || {};
+    if (!_wq[phase]) _wq[phase] = { ...wk };
+    const textFields = { p1: ['new','peak','hard'], p2: ['problem','reaction','adjust'], p3: ['pattern','impact','purpose','free'] };
+    (textFields[phase] || []).forEach(k => { const el = document.getElementById(`${phase}w_${k}`); if (el && wk[k]) el.value = wk[k]; });
+    const boolFields = { p1: ['repeat','hyp'], p2: ['future'], p3: [] };
+    (boolFields[phase] || []).forEach(k => {
+      const val = wk[k];
+      const container = document.getElementById(`${phase}w_${k}`);
+      if (!val || !container) return;
+      container.querySelectorAll('.tq-opt').forEach(b => { b.classList.toggle('selected', b.textContent.toLowerCase().trim() === val.toLowerCase().trim()); });
+    });
+  }
+}
+
+function renderEvolution(phase) {
+  const data = getProjData();
+  const daily = data.tracking?.[phase]?.daily || {};
+  const days = Object.entries(daily).sort((a,b) => a[0].localeCompare(b[0]));
+  const chartEl = document.getElementById(`${phase}_chart`);
+  const statsEl = document.getElementById(`${phase}_stats`);
+  if (!chartEl) return;
+
+  const scores = days.map(([d, v]) => ({ d, s: v.score_daily || 0 })).filter(x => x.s > 0);
+  const maxS = 10;
+  const colors = { p1:'#C4855A', p2:'#4A7FA8', p3:'#7B6FAA' };
+  const color = colors[phase] || '#C4855A';
+
+  if (!scores.length) { chartEl.innerHTML = '<span style="font-size:12px;color:var(--warm-mid);font-style:italic">Sin registros todavía</span>'; statsEl.innerHTML = ''; return; }
+
+  chartEl.innerHTML = scores.map(({d,s}) => `<div class="evo-bar" title="${d}: ${s}/10" style="height:${s*5}px;background:${color};opacity:${0.5+s*0.05};flex:1;max-width:32px"></div>`).join('');
+
+  const avg = (scores.reduce((a,b)=>a+b.s,0)/scores.length).toFixed(1);
+  const worked = Object.values(daily).filter(v => v.worked === 'sí').length;
+  const energyHigh = Object.values(daily).filter(v => v.energy_daily === 'alta' || v.skill === 'sí').length;
+
+  statsEl.innerHTML = `
+    <span class="evo-stat">📅 ${days.length} días registrados</span>
+    <span class="evo-stat">⭐ Media ${avg}/10</span>
+    <span class="evo-stat">✅ ${worked} días activos</span>
+    ${energyHigh ? `<span class="evo-stat">⚡ ${energyHigh} días con alta energía</span>` : ''}
+  `;
+}
+
+function initEvolutions() {
+  ['p1','p2','p3'].forEach(renderEvolution);
+}
+
+async function generatePhaseAI(phase, phaseName) {
+  const data = getProjData();
+  const tracking = data.tracking?.[phase] || {};
+  const daily = Object.entries(tracking.daily || {}).sort().slice(-14);
+  const weekly = Object.values(tracking.weekly || {}).slice(-4);
+  const projects = phase === 'p1' ? (data.phase1 || []) : phase === 'p2' ? (data.phase2 || []) : [...(data.phase1||[]),...(data.phase2||[])];
+
+  const resultEl = document.getElementById(`${phase}_ai_result`);
+  resultEl.style.display = 'block';
+  resultEl.innerHTML = '<div class="ai-loading"><div class="spinner"></div><br>Analizando tu evolución...</div>';
+
+  const dailySummary = daily.map(([d,v]) => `${d}: nota ${v.score_daily||'?'}/10, trabajé: ${v.worked||'?'}, energía: ${v.energy_daily||v.skill||'?'}, actividad: ${v.what||v.flow||'no indicado'}`).join('\n') || 'Sin registros diarios';
+  const weeklySummary = weekly.map((w,i) => Object.entries(w).filter(([k])=>k!=='savedAt').map(([k,v])=>`${k}: ${v}`).join(', ')).join('\n') || 'Sin revisiones semanales';
+  const projSummary = projects.map(p=>`${p.name}: energía ${p.energia||'?'}/10, impacto ${p.impacto||'?'}/10, fluidez ${p.fluidez||'?'}/10`).join('\n') || 'Sin proyectos';
+
+  const phaseQuestions = {
+    p1: 'exploración de intereses y energía personal. Observa qué despierta su curiosidad.',
+    p2: 'experimentación profunda. Analiza si el proyecto tiene impacto real y futuro.',
+    p3: 'integración de patrones de propósito. Detecta qué habilidades y entornos se repiten.'
+  };
+
+  const prompt = `Eres un coach de propósito personal. Estás analizando la Fase ${phaseName} de una mujer de 44 años en proceso de descubrir su propósito personal mediante proyectos experimentales de 2-4 semanas.
+
+Objetivo de esta fase: ${phaseQuestions[phase]}
+
+PROYECTOS Y MÉTRICAS:
+${projSummary}
+
+REGISTROS DIARIOS (últimos 14 días):
+${dailySummary}
+
+REVISIONES SEMANALES:
+${weeklySummary}
+
+Genera un análisis breve y personalizado con 3 secciones:
+1. Evolución observada (2-3 líneas sobre la tendencia real de los datos)
+2. Conclusiones clave (3 puntos concisos y específicos basados en los datos)
+3. Recomendaciones para la próxima semana (2 acciones concretas y accionables)
+
+Tono: directo, empático, orientado a la acción. En segunda persona.
+Responde SOLO en JSON sin backticks: {"evolucion":"...","conclusiones":["...","...","..."],"recomendaciones":["...","..."]}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:700, messages:[{role:'user',content:prompt}] })
+    });
+    const result = await res.json();
+    const text = result.content.map(c=>c.text||'').join('').replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(text);
+    const accentColor = { p1:'var(--gold)', p2:'#8BB8D4', p3:'#B8ADDC' }[phase] || 'var(--gold)';
+    resultEl.innerHTML = `
+      <div style="font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:${accentColor};margin-bottom:10px">✦ Análisis · Fase ${phaseName}</div>
+      <p style="font-size:13.5px;color:rgba(247,244,238,.88);line-height:1.7;font-family:'Inter','DM Sans',sans-serif;font-weight:300;margin-bottom:12px">${parsed.evolucion}</p>
+      <div style="font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:${accentColor};margin-bottom:8px">Conclusiones</div>
+      ${parsed.conclusiones.map(c=>`<div style="display:flex;gap:8px;margin-bottom:7px"><span style="color:${accentColor};flex-shrink:0">→</span><span style="font-size:13px;color:rgba(247,244,238,.82);line-height:1.6;font-family:'Inter','DM Sans',sans-serif;font-weight:300">${c}</span></div>`).join('')}
+      <div style="margin-top:12px;padding:12px;background:rgba(255,255,255,.06);border-radius:10px;border:1px solid rgba(255,255,255,.08)">
+        <div style="font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:${accentColor};margin-bottom:8px">Próxima semana</div>
+        ${parsed.recomendaciones.map((r,i)=>`<div style="display:flex;gap:8px;margin-bottom:6px"><span style="color:${accentColor};font-weight:600;flex-shrink:0">${i+1}.</span><span style="font-size:13px;color:rgba(247,244,238,.85);line-height:1.6;font-family:'Inter','DM Sans',sans-serif;font-weight:300">${r}</span></div>`).join('')}
+      </div>`;
+  } catch {
+    resultEl.innerHTML = '<p style="font-size:13px;color:rgba(247,244,238,.5)">No se pudo generar el análisis. Revisa tu conexión.</p>';
+  }
 }
 
 function getWeekKey() {
   const now = new Date();
   const start = new Date(now.getFullYear(), 0, 1);
   return Math.ceil(((now - start) / 86400000 + start.getDay() + 1) / 7);
-}
-
-function toggleLogForm(type) {
-  const id = type === 'ia' ? 'logFormIA' : 'logFormImpact';
-  document.getElementById(id).classList.toggle('open');
-}
-
-function submitLog(type) {
-  const textEl = document.getElementById('logText' + (type === 'ia' ? 'IA' : 'Impact'));
-  const hoursEl = document.getElementById('logHours' + (type === 'ia' ? 'IA' : 'Impact'));
-  const text = textEl.value.trim();
-  if (!text) { showToast('Escribe algo antes de guardar.'); return; }
-  const data = getProjData();
-  const key = type + '_logs';
-  const logs = data[key] || [];
-  logs.unshift({ date: new Date().toLocaleDateString('es-ES'), text, hours: parseFloat(hoursEl.value) });
-  data[key] = logs;
-  saveProjData(data);
-  textEl.value = '';
-  document.getElementById(type === 'ia' ? 'logFormIA' : 'logFormImpact').classList.remove('open');
-  renderProjLogs(type);
-  updateProjStats();
-  showToast('✓ Sesión registrada. ¡Cada hora cuenta!');
-}
-
-function renderProjLogs(type) {
-  const data = getProjData();
-  const logs = data[type + '_logs'] || [];
-  const el = document.getElementById(type + 'LogHistory');
-  if (!logs.length) {
-    el.innerHTML = `<div style="text-align:center;padding:24px;color:var(--warm-mid);font-size:13px;font-style:italic">Aún no hay sesiones registradas. ¡Empieza esta semana!</div>`;
-    return;
-  }
-  el.innerHTML = logs.map(l => `
-    <div class="proj-log-item">
-      <div class="proj-log-dot proj-log-dot-${type}"></div>
-      <div><div class="proj-log-date">${l.date} · ${l.hours}h</div><div class="proj-log-text">${l.text}</div></div>
-    </div>`).join('');
-}
-
-function updateProjStats() {
-  const data = getProjData();
-  const iaWeeks = (data['ia_weeks'] || []).length;
-  const impactWeeks = (data['impact_weeks'] || []).length;
-  document.getElementById('statWeeks').textContent = Math.max(iaWeeks, impactWeeks);
-  const iaH = (data['ia_logs'] || []).reduce((s,l)=>s+(l.hours||0),0);
-  const impH = (data['impact_logs'] || []).reduce((s,l)=>s+(l.hours||0),0);
-  document.getElementById('statHoursIA').textContent = iaH + 'h';
-  document.getElementById('statHoursImpact').textContent = impH + 'h';
 }
 
 // INIT
@@ -1736,6 +2832,9 @@ function updateProjStats() {
   ['t1','t2','t3'].forEach(id => document.getElementById(id).addEventListener('change', ()=>{ if(notifGranted) scheduleNotifications(); }));
   initProyecto();
   renderWrHistory();
+  loadMomentNotes('morning');
+  loadJournalContext();
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && menuOpen) toggleMenu(); });
 })();
 </script>
 </body>
